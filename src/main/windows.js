@@ -14,8 +14,8 @@ function createDetectorWindow() {
 }
 
 let nudgeWin = null;
-function showNudge(level) {
-  if (nudgeWin) { nudgeWin.webContents.send('nyx:nudge', { level }); return nudgeWin; }
+function showNudge(level, waitMs) {
+  if (nudgeWin) { nudgeWin.webContents.send('nyx:nudge', { level, waitMs }); return nudgeWin; }
   const { width, height } = screen.getPrimaryDisplay().bounds;
   nudgeWin = new BrowserWindow({
     width, height, x: 0, y: 0,
@@ -25,7 +25,7 @@ function showNudge(level) {
   });
   nudgeWin.setIgnoreMouseEvents(true);
   nudgeWin.loadFile(path.join(__dirname, '..', 'renderer', 'nudge.html'));
-  nudgeWin.webContents.once('did-finish-load', () => nudgeWin.webContents.send('nyx:nudge', { level }));
+  nudgeWin.webContents.once('did-finish-load', () => nudgeWin.webContents.send('nyx:nudge', { level, waitMs }));
   nudgeWin.on('closed', () => { nudgeWin = null; });
   return nudgeWin;
 }
