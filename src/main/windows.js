@@ -46,4 +46,27 @@ function showCalibration() {
   return calibrationWin;
 }
 
-module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration };
+function createPanelWindow() {
+  const win = new BrowserWindow({
+    width: 300, height: 360,
+    show: false, frame: false, resizable: false, movable: false,
+    transparent: false, alwaysOnTop: true, skipTaskbar: true, fullscreenable: false,
+    webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
+  });
+  win.loadFile(path.join(__dirname, '..', 'renderer', 'panel.html'));
+  return win;
+}
+
+let settingsWin = null;
+function showSettings() {
+  if (settingsWin) { settingsWin.focus(); return settingsWin; }
+  settingsWin = new BrowserWindow({
+    width: 460, height: 560, resizable: false, title: 'Nyx Settings',
+    webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
+  });
+  settingsWin.loadFile(path.join(__dirname, '..', 'renderer', 'settings.html'));
+  settingsWin.on('closed', () => { settingsWin = null; });
+  return settingsWin;
+}
+
+module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings };
