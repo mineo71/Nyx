@@ -99,3 +99,19 @@ After a pause fires, wake the Mac and open the menu → it shows
 - Confirm inside the packaged app: tray + popover work, calibration camera works, a video
   arms it, and the media-key pause + sleep still fire (grant Accessibility to Nyx.app, not
   to the terminal). Detection runs fully offline (model vendored under resources).
+
+## Detection v2
+
+- Camera now samples ~every 4s while WATCHING (was 60s), ~1.5s when checking.
+- Robust closed/open: blinks and single noisy frames no longer flip the state; sustained
+  closure does; opening your eyes for a few seconds cancels. Verify: blink normally while
+  watching → stays WATCHING; hold eyes shut → goes DROWSY then escalates.
+- Head-nod: let your head drop while closing your eyes → should reach the nudge faster than
+  eyes-closed-upright. If it never helps, the pitch sign may be inverted — check the log's
+  `pitch` values (below) and flip the `headDownDeg` sign in `src/core/config.js`.
+- Logging (default ON): a numbers-only JSONL grows at
+  `~/Library/Application Support/Nyx/detection-log.jsonl` (Settings → Reveal log). Confirm it
+  contains lines like `{"t":...,"l":..,"r":..,"avg":..,"pitch":..,"closedFrac":..,"cls":"..","state":".."}`
+  and NO images. Toggle it off in Settings → the file stops growing.
+- Tuning: after a night, inspect the log — if it false-alarms, raise `enterFrac` or `tAsleep`;
+  if it misses, lower them. Threshold comes from calibration.
