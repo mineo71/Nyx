@@ -14,8 +14,7 @@ async function init() {
     const fileset = await FilesetResolver.forVisionTasks(WASM_ROOT);
     landmarker = await FaceLandmarker.createFromOptions(fileset, {
       baseOptions: {
-        modelAssetPath:
-          'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+        modelAssetPath: new URL('../resources/mediapipe/face_landmarker.task', import.meta.url).href,
       },
       outputFaceBlendshapes: true,
       runningMode: 'IMAGE',
