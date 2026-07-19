@@ -29,4 +29,8 @@ describe('config', () => {
     expect(isWithinNightHours(nh, 3)).toBe(true);
     expect(isWithinNightHours(nh, 6)).toBe(false);
   });
+
+  it('includes the start boundary of a same-day window', () => {
+    expect(isWithinNightHours({ enabled: true, start: 1, end: 5 }, 1)).toBe(true);
+  });
 });

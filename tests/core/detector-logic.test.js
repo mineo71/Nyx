@@ -29,4 +29,8 @@ describe('computeThreshold', () => {
   it('throws when either sample set is empty', () => {
     expect(() => computeThreshold([], [{ left: 0.9, right: 0.9 }])).toThrow();
   });
+
+  it('throws when the closed sample set is empty', () => {
+    expect(() => computeThreshold([{ left: 0.1, right: 0.1 }], [])).toThrow();
+  });
 });

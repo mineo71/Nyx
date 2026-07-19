@@ -19,11 +19,11 @@ class SleepStateMachine {
 
   mediaStopped() {
     if (this.state === 'IDLE') return;
-    const wasEscalating = this.state === 'ESCALATING';
+    const wasEscalationBound = this.state === 'DROWSY' || this.state === 'ESCALATING';
     this._reset();
     this.state = 'IDLE';
     this.on.disarm();
-    if (wasEscalating) this.on.deescalate();
+    if (wasEscalationBound) this.on.deescalate();
   }
 
   frame(classification) {
@@ -55,6 +55,7 @@ class SleepStateMachine {
   slept() {
     this._reset();
     this.state = 'IDLE';
+    this.on.disarm();
   }
 
   _wake() {

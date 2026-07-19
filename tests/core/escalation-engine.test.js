@@ -66,10 +66,12 @@ describe('EscalationEngine', () => {
 
   it('pauseOnly final action pauses and does nothing else', () => {
     const actions = makeActions();
-    const engine = new EscalationEngine({ ladder: LADDER, actions, finalAction: 'pauseOnly' });
+    const onComplete = vi.fn();
+    const engine = new EscalationEngine({ ladder: LADDER, actions, finalAction: 'pauseOnly', onComplete });
     engine.start();
     vi.advanceTimersByTime(30000 + 45000 + 30000);
     expect(actions.sleep).not.toHaveBeenCalled();
     expect(actions.displayOff).not.toHaveBeenCalled();
+    expect(onComplete).toHaveBeenCalledOnce();
   });
 });

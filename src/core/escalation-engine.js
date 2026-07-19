@@ -24,6 +24,7 @@ class EscalationEngine {
   }
 
   _advance() {
+    if (!this._running) return;
     this._index += 1;
     const step = this.ladder[this._index];
     if (!step) { this._finish(); return; }

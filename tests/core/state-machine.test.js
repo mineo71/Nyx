@@ -114,4 +114,23 @@ describe('SleepStateMachine', () => {
     m.input();
     expect(m.state).toBe('WATCHING');
   });
+
+  it('disarms AND deescalates when media stops during DROWSY', () => {
+    const { m, on } = makeMachine();
+    m.mediaPlaying();
+    m.frame('closed');            // now DROWSY
+    m.mediaStopped();
+    expect(m.state).toBe('IDLE');
+    expect(on.disarm).toHaveBeenCalledOnce();
+    expect(on.deescalate).toHaveBeenCalledOnce();
+  });
+
+  it('slept() disarms so the integration can tear down', () => {
+    const { m, on } = makeMachine();
+    m.mediaPlaying();
+    m.frame('closed');
+    m.slept();
+    expect(m.state).toBe('IDLE');
+    expect(on.disarm).toHaveBeenCalledTimes(1);
+  });
 });
