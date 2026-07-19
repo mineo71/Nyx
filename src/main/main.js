@@ -19,7 +19,7 @@ if (app.dock) app.dock.hide(); // menu-bar only, no dock icon
 
 let machine, engine, tray, detectorWin, scheduler, mediaWatcher, idleMonitor, tickTimer;
 const calibrationSamples = { open: [], closed: [] };
-const CALIBRATION_MIN = 5;
+const CALIBRATION_MIN = 10; // matches the calibration window's per-phase sample count
 
 function currentThreshold() {
   return settings.get('eyeCloseThreshold', DEFAULTS.eyeCloseThreshold);
