@@ -31,11 +31,11 @@ class EscalationEngine {
 
     switch (step.action) {
       case 'nudge':
-        this.actions.nudge(step.level);
+        this.actions.nudge(step.level, step.waitMs);
         break;
       case 'pauseAndNudge':
         this.actions.pause();
-        this.actions.nudge(step.level);
+        this.actions.nudge(step.level, step.waitMs);
         break;
       case 'final':
         this._runFinal();

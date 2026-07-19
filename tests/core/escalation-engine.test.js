@@ -20,7 +20,7 @@ describe('EscalationEngine', () => {
     const actions = makeActions();
     const engine = new EscalationEngine({ ladder: LADDER, actions, finalAction: 'sleep' });
     engine.start();
-    expect(actions.nudge).toHaveBeenCalledWith('soft');
+    expect(actions.nudge).toHaveBeenCalledWith('soft', 30000);
     expect(actions.pause).not.toHaveBeenCalled();
   });
 
@@ -33,7 +33,7 @@ describe('EscalationEngine', () => {
     expect(actions.pause).toHaveBeenCalledOnce();
     expect(actions.nudge).toHaveBeenCalledTimes(2);
     vi.advanceTimersByTime(45000);
-    expect(actions.nudge).toHaveBeenCalledWith('loud');
+    expect(actions.nudge).toHaveBeenCalledWith('loud', 30000);
     vi.advanceTimersByTime(30000);
     expect(actions.sleep).toHaveBeenCalledOnce();
     expect(onComplete).toHaveBeenCalledOnce();

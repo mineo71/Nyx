@@ -44,6 +44,7 @@ function setMonitoringMode(mode) {
   if (mode === 'off') monitoringUntil = nextHour(5);
   else if (mode === 'snooze') monitoringUntil = Date.now() + 60 * 60 * 1000;
   else monitoringUntil = 0;
+  if (mode !== 'auto' && machine && machine.state !== 'IDLE') machine.mediaStopped();
   pushPanelState();
 }
 
@@ -94,13 +95,16 @@ function refreshRuntimeConfig() {
     machine.config.tAsleepMs = settings.get('tAsleepMs', DEFAULTS.tAsleepMs);
     machine.config.nightHours = settings.get('nightHours', DEFAULTS.nightHours);
   }
+  const wasRunning = engine && engine._running;
+  if (engine) engine.cancel();
   engine = buildEngine();
+  if (wasRunning) engine.start();
 }
 
 function buildEngine() {
   const ladder = settings.get('ladder', DEFAULTS.ladder);
   const actions = {
-    nudge: (level) => { showNudge(level, ladder[0]?.waitMs ?? 30000); },
+    nudge: (level, waitMs) => { showNudge(level, waitMs ?? ladder[0]?.waitMs ?? 30000); },
     pause: () => {
       osActions.pressMediaPlayPause();
       addRecap({ title: mediaWatcher.currentTitle, app: null, timestamp: Date.now() });
