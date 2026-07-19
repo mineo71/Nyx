@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./styles/tokens.css" />
+    <style>
+      body { width: 300px; height: 360px; padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-4); }
+      .top { display: flex; align-items: center; justify-content: space-between; }
+      .brand { display: flex; align-items: center; gap: var(--sp-2); font-weight: 600; }
+      .state { display: flex; align-items: center; gap: var(--sp-2); font-size: 12px; color: var(--muted); }
+      .status h2 { font-size: 20px; font-weight: 500; }
+      .status p { font-size: 12px; margin-top: var(--sp-1); }
+      .recap .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+      .recap .title { font-size: 14px; margin-top: var(--sp-1); }
+      .recap .time { font-size: 12px; color: var(--muted); }
+      .row { display: flex; align-items: center; justify-content: space-between; }
+      .actions { margin-top: auto; display: flex; gap: var(--sp-2); }
+      .actions button { flex: 1; }
+      .icon-btn { flex: 0 0 auto; width: 40px; }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+      <div class="brand">🌙 Nyx</div>
+      <div class="state"><span id="dot" class="dot"></span><span id="stateLabel">Idle</span></div>
+    </div>
+
+    <div class="status">
+      <h2 id="statusLine">Idle</h2>
+      <p id="statusSub" class="muted">Waiting for something to play</p>
+    </div>
+
+    <div class="recap card">
+      <div class="label">Last night</div>
+      <div id="recapTitle" class="title">No sleep events yet</div>
+      <div id="recapTime" class="time"></div>
+    </div>
+
+    <div class="row">
+      <span class="muted" style="font-size:13px">Monitoring</span>
+      <select id="mode">
+        <option value="auto">Auto</option>
+        <option value="off">Off tonight</option>
+        <option value="snooze">Snooze 1h</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button id="calibrate">Calibrate</button>
+      <button id="settings">Settings</button>
+      <button id="quit" class="icon-btn" title="Quit Nyx">⏻</button>
+    </div>
+
+    <script src="./panel.js"></script>
+  </body>
+</html>

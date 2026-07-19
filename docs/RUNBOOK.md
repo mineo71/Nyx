@@ -69,5 +69,33 @@ After a pause fires, wake the Mac and open the menu → it shows
 ## Known v1 limitations
 - Media control is a global media key, so it pauses whatever is playing but can't read the
   exact episode via that path — titles come from best-effort AppleScript reads.
-- No app packaging/signing yet; run via `npm start`. Packaging (electron-builder) + a local
-  model asset are the natural next steps.
+
+## UI & Packaging (v2)
+
+### Popover
+- Click the menu-bar crescent → popover opens under the icon; click away → it hides.
+- Panel shows live state (Idle/Watching/Nudging), camera status, and last night's recap.
+- Monitoring dropdown: Auto / Off tonight (until ~5am) / Snooze 1h — verify each suppresses
+  arming when a video plays, and Auto resumes it.
+
+### Settings
+- Popover → Settings. Change fall-asleep delay, nudge/pause waits, final action, night
+  hours, launch-at-login. Each change persists immediately (reopen Settings to confirm).
+- Toggle "Launch at login" → check System Settings → General → Login Items lists Nyx.
+- "Recalibrate" opens the calibration wizard.
+
+### Calibration (restyled)
+- Shows a live mirror preview + a live blink-score readout that changes as you blink.
+- Capture 10 open + 10 closed → console logs the new threshold; Settings shows it.
+
+### Nudge (restyled)
+- The overlay dims + blurs, shows a breathing crescent and a countdown ring that drains
+  over the current step's wait. Loud step plays the chime louder.
+
+### Packaging
+- `npm run dist` → `dist/Nyx-0.1.0-arm64.dmg` (arch-suffixed on Apple Silicon) + a `.zip`.
+  Mount the dmg, drag Nyx to Applications.
+- First launch: right-click Nyx.app → Open (unsigned; Gatekeeper prompt once).
+- Confirm inside the packaged app: tray + popover work, calibration camera works, a video
+  arms it, and the media-key pause + sleep still fire (grant Accessibility to Nyx.app, not
+  to the terminal). Detection runs fully offline (model vendored under resources).

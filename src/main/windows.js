@@ -14,8 +14,8 @@ function createDetectorWindow() {
 }
 
 let nudgeWin = null;
-function showNudge(level) {
-  if (nudgeWin) { nudgeWin.webContents.send('nyx:nudge', { level }); return nudgeWin; }
+function showNudge(level, waitMs) {
+  if (nudgeWin) { nudgeWin.webContents.send('nyx:nudge', { level, waitMs }); return nudgeWin; }
   const { width, height } = screen.getPrimaryDisplay().bounds;
   nudgeWin = new BrowserWindow({
     width, height, x: 0, y: 0,
@@ -25,7 +25,7 @@ function showNudge(level) {
   });
   nudgeWin.setIgnoreMouseEvents(true);
   nudgeWin.loadFile(path.join(__dirname, '..', 'renderer', 'nudge.html'));
-  nudgeWin.webContents.once('did-finish-load', () => nudgeWin.webContents.send('nyx:nudge', { level }));
+  nudgeWin.webContents.once('did-finish-load', () => nudgeWin.webContents.send('nyx:nudge', { level, waitMs }));
   nudgeWin.on('closed', () => { nudgeWin = null; });
   return nudgeWin;
 }
@@ -46,4 +46,27 @@ function showCalibration() {
   return calibrationWin;
 }
 
-module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration };
+function createPanelWindow() {
+  const win = new BrowserWindow({
+    width: 300, height: 360,
+    show: false, frame: false, resizable: false, movable: false,
+    transparent: false, alwaysOnTop: true, skipTaskbar: true, fullscreenable: false,
+    webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
+  });
+  win.loadFile(path.join(__dirname, '..', 'renderer', 'panel.html'));
+  return win;
+}
+
+let settingsWin = null;
+function showSettings() {
+  if (settingsWin) { settingsWin.focus(); return settingsWin; }
+  settingsWin = new BrowserWindow({
+    width: 460, height: 560, resizable: false, title: 'Nyx Settings',
+    webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
+  });
+  settingsWin.loadFile(path.join(__dirname, '..', 'renderer', 'settings.html'));
+  settingsWin.on('closed', () => { settingsWin = null; });
+  return settingsWin;
+}
+
+module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings };
