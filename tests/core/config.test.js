@@ -4,8 +4,8 @@ import { DEFAULTS, isWithinNightHours } from '../../src/core/config.js';
 describe('config', () => {
   it('exposes sane defaults', () => {
     expect(DEFAULTS.tAsleepMs).toBe(90000);
-    expect(DEFAULTS.intervals.baselineMs).toBe(60000);
-    expect(DEFAULTS.intervals.confirmMs).toBe(2000);
+    expect(DEFAULTS.intervals.baselineMs).toBe(4000);
+    expect(DEFAULTS.intervals.confirmMs).toBe(1500);
     expect(DEFAULTS.finalAction).toBe('sleep');
     expect(DEFAULTS.ladder).toHaveLength(4);
     expect(DEFAULTS.ladder[3].action).toBe('final');
