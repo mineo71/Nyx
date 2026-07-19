@@ -2,16 +2,26 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <link rel="stylesheet" href="./styles/tokens.css" />
     <style>
-      body { font: 16px -apple-system, system-ui, sans-serif; padding: 24px; }
-      button { font-size: 16px; padding: 8px 16px; margin-top: 12px; }
-      #status { margin-top: 16px; color: #555; }
+      body { width: 480px; padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-4); align-items: center; }
+      h2 { font-size: 20px; font-weight: 500; align-self: flex-start; }
+      video { width: 240px; height: 180px; border-radius: var(--radius); background: #000; border: 1px solid var(--border); transform: scaleX(-1); object-fit: cover; }
+      #instruction { text-align: center; font-size: 15px; }
+      .readout { font-size: 13px; color: var(--muted); }
+      .dots { display: flex; gap: var(--sp-1); }
+      .dots .d { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+      .dots .d.on { background: var(--accent); }
+      #status { color: var(--muted); font-size: 13px; }
     </style>
   </head>
   <body>
     <h2>Calibrate Nyx</h2>
-    <p id="instruction">Step 1: look at the camera with your eyes <b>open</b>, then click Capture ~10 times.</p>
-    <button id="capture">Capture</button>
+    <video id="preview" autoplay playsinline muted></video>
+    <p id="instruction">Step 1 — look at the camera with your eyes <b>open</b>, then click Capture ~10 times.</p>
+    <div class="readout">Blink score: <span id="score">—</span></div>
+    <div class="dots" id="dots"></div>
+    <button id="capture" class="primary">Capture</button>
     <div id="status"></div>
     <script src="./calibration.js"></script>
   </body>
