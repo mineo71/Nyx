@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html, body { margin: 0; height: 100%; background: rgba(0,0,0,0.55); overflow: hidden; }
+      #msg {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+        color: #eee; font: 300 42px -apple-system, system-ui, sans-serif; text-align: center;
+      }
+      #sub { font-size: 18px; opacity: 0.7; margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <div id="msg">Still watching?<div id="sub">Move to dismiss — Nyx thinks you dozed off.</div></div>
+    <audio id="chime" src="../resources/chime.wav"></audio>
+    <script src="./nudge.js"></script>
+  </body>
+</html>
