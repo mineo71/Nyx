@@ -1,9 +1,13 @@
-const { app, ipcMain, powerMonitor, session } = require('electron');
+const { app, ipcMain, powerMonitor, session, shell } = require('electron');
+const path = require('node:path');
 
 const { DEFAULTS } = require('../core/config.js');
 const { SleepStateMachine } = require('../core/state-machine.js');
 const { EscalationEngine } = require('../core/escalation-engine.js');
-const { classifyEyes, computeThreshold } = require('../core/detector-logic.js');
+const { computeThreshold } = require('../core/detector-logic.js');
+const { DrowsinessDetector } = require('../core/drowsiness-detector.js');
+const { pitchFromMatrix } = require('../core/head-pose.js');
+const { DetectionLog } = require('../services/detection-log.js');
 const { clampSettingsView } = require('../core/settings-schema.js');
 
 const osActions = require('../services/os-actions.js');
@@ -20,6 +24,7 @@ app.setName('Nyx');
 if (app.dock) app.dock.hide();
 
 let machine, engine, tray, popover, panelWin, detectorWin, scheduler, mediaWatcher, idleMonitor, tickTimer;
+let drowsiness, detectionLog;
 let cameraOk = true;
 let calibrationOpen = false;
 const calibrationSamples = { open: [], closed: [] };
@@ -67,6 +72,7 @@ function readSettingsView() {
     nightHoursStart: nh.start,
     nightHoursEnd: nh.end,
     openAtLogin: app.getLoginItemSettings().openAtLogin,
+    logDetection: settings.get('logDetection', DEFAULTS.logDetection),
   });
 }
 
@@ -87,6 +93,7 @@ function applySettingsView(view) {
   ladder[2].waitMs = v.nudgeWaitSec * 1000;
   settings.set('ladder', ladder);
   app.setLoginItemSettings({ openAtLogin: v.openAtLogin });
+  settings.set('logDetection', v.logDetection);
   refreshRuntimeConfig();
 }
 
@@ -121,7 +128,7 @@ function buildEngine() {
   });
 }
 
-function startArmed() { osActions.startCaffeinate(); scheduler.start(); pushPanelState(); tray.refresh(); }
+function startArmed() { if (drowsiness) drowsiness.reset(); osActions.startCaffeinate(); scheduler.start(); pushPanelState(); tray.refresh(); }
 function stopArmed() { osActions.stopCaffeinate(); scheduler.stop(); hideNudge(); pushPanelState(); tray.refresh(); }
 
 function pushPanelState() {
@@ -139,6 +146,11 @@ app.whenReady().then(() => {
   session.defaultSession.setPermissionCheckHandler((_wc, permission) => permission === 'media');
 
   detectorWin = createDetectorWindow();
+  drowsiness = new DrowsinessDetector({
+    getThreshold: currentThreshold,
+    params: settings.get('drowsiness', DEFAULTS.drowsiness),
+  });
+  detectionLog = new DetectionLog({ filePath: path.join(app.getPath('userData'), 'detection-log.jsonl') });
   panelWin = createPanelWindow();
 
   machine = new SleepStateMachine({
@@ -179,7 +191,17 @@ app.whenReady().then(() => {
   tickTimer = setInterval(() => machine.tick(), 1000);
 
   ipcMain.on('nyx:frame', (_e, sample) => {
-    machine.frame(classifyEyes(sample, currentThreshold()));
+    const now = Date.now();
+    const pitch = sample && sample.matrix ? pitchFromMatrix(sample.matrix) : null;
+    const input = sample ? { left: sample.left, right: sample.right, pitch } : null;
+    drowsiness.update(input, now);
+    const cls = drowsiness.classify();
+    machine.frame(cls);
+    if (settings.get('logDetection', DEFAULTS.logDetection) && machine.state !== 'IDLE') {
+      const m = drowsiness.metrics();
+      detectionLog.append({ t: now, l: sample ? sample.left : null, r: sample ? sample.right : null,
+        avg: m.avg, pitch: m.pitch, closedFrac: m.closedFrac, cls, state: machine.state });
+    }
     if (calibrationOpen) forwardCalibrationScore(sample);
   });
   ipcMain.on('nyx:detector-ready', () => { cameraOk = true; pushPanelState(); });
@@ -202,6 +224,7 @@ app.whenReady().then(() => {
   ipcMain.on('nyx:open-settings', () => showSettings());
   ipcMain.on('nyx:open-calibration', () => openCalibration());
   ipcMain.on('nyx:quit', () => { stopArmed(); app.quit(); });
+  ipcMain.on('nyx:reveal-log', () => shell.showItemInFolder(detectionLog.filePath));
 
   ipcMain.handle('nyx:get-settings', () => readSettingsView());
   ipcMain.handle('nyx:set-setting', (_e, { key, value }) => {
