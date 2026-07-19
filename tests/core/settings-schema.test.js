@@ -4,7 +4,8 @@ import { clampSettingsView, FINAL_ACTIONS, DEFAULT_VIEW } from '../../src/core/s
 describe('clampSettingsView', () => {
   it('passes through valid values unchanged', () => {
     const v = { tAsleepSec: 90, nudgeWaitSec: 30, pauseWaitSec: 45, finalAction: 'sleep',
-      nightHoursEnabled: true, nightHoursStart: 21, nightHoursEnd: 7, openAtLogin: false };
+      nightHoursEnabled: true, nightHoursStart: 21, nightHoursEnd: 7, openAtLogin: false,
+      logDetection: true };
     expect(clampSettingsView(v)).toEqual(v);
   });
 
@@ -31,5 +32,11 @@ describe('clampSettingsView', () => {
   it('fills missing keys from DEFAULT_VIEW', () => {
     const v = clampSettingsView({});
     expect(v).toEqual(DEFAULT_VIEW);
+  });
+
+  it('defaults logDetection to true and coerces it to boolean', () => {
+    expect(clampSettingsView({}).logDetection).toBe(true);
+    expect(clampSettingsView({ logDetection: 0 }).logDetection).toBe(false);
+    expect(clampSettingsView({ logDetection: 1 }).logDetection).toBe(true);
   });
 });

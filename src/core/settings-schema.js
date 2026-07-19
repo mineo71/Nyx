@@ -9,6 +9,7 @@ const DEFAULT_VIEW = {
   nightHoursStart: 21,
   nightHoursEnd: 7,
   openAtLogin: false,
+  logDetection: true,
 };
 
 function clampInt(value, min, max, fallback) {
@@ -28,6 +29,7 @@ function clampSettingsView(view = {}) {
     nightHoursStart: clampInt(v.nightHoursStart, 0, 23, DEFAULT_VIEW.nightHoursStart),
     nightHoursEnd: clampInt(v.nightHoursEnd, 0, 23, DEFAULT_VIEW.nightHoursEnd),
     openAtLogin: Boolean(v.openAtLogin),
+    logDetection: Boolean(v.logDetection),
   };
 }
 
