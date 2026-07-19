@@ -23,4 +23,5 @@ contextBridge.exposeInMainWorld('nyx', {
   // Settings window
   getSettings: () => ipcRenderer.invoke('nyx:get-settings'),
   setSetting: (key, value) => ipcRenderer.invoke('nyx:set-setting', { key, value }),
+  revealLog: () => ipcRenderer.send('nyx:reveal-log'),
 });

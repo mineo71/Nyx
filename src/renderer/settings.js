@@ -1,5 +1,5 @@
 const NUM_KEYS = ['tAsleepSec', 'nudgeWaitSec', 'pauseWaitSec', 'nightHoursStart', 'nightHoursEnd'];
-const BOOL_KEYS = ['nightHoursEnabled', 'openAtLogin'];
+const BOOL_KEYS = ['nightHoursEnabled', 'openAtLogin', 'logDetection'];
 const SELECT_KEYS = ['finalAction'];
 
 function fill(view) {
@@ -20,6 +20,7 @@ async function init() {
   BOOL_KEYS.forEach((k) => document.getElementById(k).addEventListener('change', (e) => save(k, e.target.checked)));
   SELECT_KEYS.forEach((k) => document.getElementById(k).addEventListener('change', (e) => save(k, e.target.value)));
   document.getElementById('recalibrate').addEventListener('click', () => window.nyx.openCalibration());
+  document.getElementById('revealLog').addEventListener('click', () => window.nyx.revealLog());
 }
 
 init();

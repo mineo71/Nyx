@@ -17,6 +17,7 @@ async function init() {
         modelAssetPath: new URL('../resources/mediapipe/face_landmarker.task', import.meta.url).href,
       },
       outputFaceBlendshapes: true,
+      outputFacialTransformationMatrixes: true,
       runningMode: 'IMAGE',
       numFaces: 1,
     });
@@ -38,7 +39,9 @@ function captureSample() {
   const left = find('eyeBlinkLeft');
   const right = find('eyeBlinkRight');
   if (left == null || right == null) return null;
-  return { left, right };
+  const mtx = result.facialTransformationMatrixes && result.facialTransformationMatrixes[0];
+  const matrix = mtx && mtx.data ? Array.from(mtx.data) : null;
+  return { left, right, matrix };
 }
 
 window.nyx.onCaptureRequest(() => {
