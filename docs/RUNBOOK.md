@@ -149,3 +149,8 @@ After a pause fires, wake the Mac and open the menu → it shows
 - Dashboard: live state, Monitoring control, Calibrate/Settings, and a Recent-nights list.
 - Closing the window keeps Nyx running in the menu bar; click the dock icon to reopen.
 - Quit from the popover ⏻ fully exits.
+
+## P3 languages
+
+- Nyx follows your macOS language; override in Settings → Language (Auto · EN · UK).
+- Switching language reloads open windows immediately. Ukrainian covers all surfaces.
