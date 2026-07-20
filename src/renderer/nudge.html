@@ -8,28 +8,49 @@
     <script src="./i18n/i18n.js"></script>
     <style>
       html, body { height: 100%; background: transparent; overflow: hidden; }
-      .backdrop { position: fixed; inset: 0; background: rgba(7,9,14,0.5); backdrop-filter: blur(24px) saturate(160%); display: flex; align-items: center; justify-content: center; }
-      .wrap { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 28px; }
-      .moon { width: 72px; height: 72px; color: var(--accent); animation: breathe 4s ease-in-out infinite; }
-      @keyframes breathe { 0%,100% { opacity: .55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
-      h1 { font-size: 44px; font-weight: 300; }
-      p { font-size: 18px; color: rgba(242,243,245,0.6); }
-      .ring { transform: rotate(-90deg); }
-      .ring circle { fill: none; stroke-width: 4; }
-      .ring .track { stroke: rgba(255,255,255,0.12); }
-      .ring .prog { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+      .backdrop {
+        position: fixed; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: radial-gradient(70% 70% at 50% 50%, rgba(8,9,12,0.72), rgba(8,9,12,0.93));
+        backdrop-filter: blur(3px) saturate(120%);
+      }
+      .wrap { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 34px; }
+
+      .orb-stage { position: relative; width: 220px; height: 220px; display: grid; place-items: center; }
+      .ring { position: absolute; transform: rotate(-90deg); }
+      .ring circle { fill: none; }
+      .ring .track { stroke: rgba(255,255,255,0.08); stroke-width: 1.6; }
+      .ring .prog { stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; }
+
+      h1 { font-size: 40px; line-height: 1.1; font-weight: 300; letter-spacing: -0.01em; color: #f4f3ff; }
+      p { font-size: 16px; color: rgba(238,241,246,0.6); margin-top: 14px; }
+
+      .brand { position: fixed; top: 22px; left: 24px; display: flex; align-items: center; gap: 9px; opacity: 0.7; }
     </style>
   </head>
   <body>
+    <div class="brand">
+      <span class="nyx-mark" style="width:18px;height:18px"></span>
+      <span class="text-[12.5px] font-semibold nyx-muted">Nyx</span>
+    </div>
+
     <div class="backdrop">
       <div class="wrap">
-        <span class="nyx-icon icon-moon moon"></span>
-        <h1 data-i18n="nudge.title">Still watching?</h1>
-        <p data-i18n="nudge.sub">Move, or open your eyes — Nyx thinks you dozed off.</p>
-        <svg class="ring" width="72" height="72" viewBox="0 0 72 72" style="display:none">
-          <circle class="track" cx="36" cy="36" r="32"></circle>
-          <circle class="prog" cx="36" cy="36" r="32"></circle>
-        </svg>
+        <div class="orb-stage">
+          <svg class="ring" width="200" height="200" viewBox="0 0 72 72" style="display:none">
+            <circle class="track" cx="36" cy="36" r="32"></circle>
+            <circle class="prog" cx="36" cy="36" r="32"></circle>
+          </svg>
+          <div class="nyx-orb" style="width:180px;height:180px">
+            <div class="nyx-orb-ring" style="width:180px;height:180px"></div>
+            <div class="nyx-orb-ring" style="width:120px;height:120px;animation-delay:.6s"></div>
+            <div class="nyx-orb-core" style="width:64px;height:64px;box-shadow:0 0 44px var(--accent-line),0 0 90px var(--accent-dim)"></div>
+          </div>
+        </div>
+        <div>
+          <h1 data-i18n="nudge.title">Still watching?</h1>
+          <p data-i18n="nudge.sub">Move, or open your eyes — Nyx thinks you dozed off.</p>
+        </div>
       </div>
     </div>
     <audio id="chime" src="../resources/chime.wav"></audio>

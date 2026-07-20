@@ -2,6 +2,7 @@ const FINAL_ACTIONS = ['sleep', 'displayOff', 'pauseOnly'];
 
 const DEFAULT_VIEW = {
   tAsleepSec: 90,
+  checkIntervalSec: 60,
   nudgeWaitSec: 30,
   pauseWaitSec: 45,
   finalAction: 'sleep',
@@ -23,6 +24,7 @@ function clampSettingsView(view = {}) {
   const v = { ...DEFAULT_VIEW, ...view };
   return {
     tAsleepSec: clampInt(v.tAsleepSec, 5, 3600, DEFAULT_VIEW.tAsleepSec),
+    checkIntervalSec: clampInt(v.checkIntervalSec, 10, 600, DEFAULT_VIEW.checkIntervalSec),
     nudgeWaitSec: clampInt(v.nudgeWaitSec, 5, 600, DEFAULT_VIEW.nudgeWaitSec),
     pauseWaitSec: clampInt(v.pauseWaitSec, 5, 600, DEFAULT_VIEW.pauseWaitSec),
     finalAction: FINAL_ACTIONS.includes(v.finalAction) ? v.finalAction : 'sleep',

@@ -23,6 +23,24 @@ describe('SleepStateMachine', () => {
     expect(on.arm).toHaveBeenCalledOnce();
   });
 
+  it('forceArm arms from IDLE even outside night hours', () => {
+    const { m, on } = makeMachine({
+      config: { tAsleepMs: 90000, nightHours: { enabled: true, start: 21, end: 7 } },
+      nowHour: () => 13,
+    });
+    m.forceArm();
+    expect(m.state).toBe('WATCHING');
+    expect(on.arm).toHaveBeenCalledOnce();
+  });
+
+  it('forceArm is a no-op when not IDLE', () => {
+    const { m, on } = makeMachine();
+    m.mediaPlaying();
+    on.arm.mockClear();
+    m.forceArm();
+    expect(on.arm).not.toHaveBeenCalled();
+  });
+
   it('does not arm outside night hours when the gate is enabled', () => {
     const { m, on } = makeMachine({
       config: { tAsleepMs: 90000, nightHours: { enabled: true, start: 21, end: 7 } },

@@ -2,50 +2,206 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------ *
+ * Nyx design system — near-black nocturnal, moonlight-lavender accent.
+ * Ported from the Nyx.dc.html handoff. Accent glows are derived from
+ * --accent via color-mix, so a system-accent override tints everything.
+ * ------------------------------------------------------------------ */
 @layer base {
-  :root { --accent: #7C8CF8; }
+  :root {
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+    --ink-0: #08090c; --ink-1: #0d0f14; --ink-2: #14161f; --ink-3: #1b1e29; --ink-4: #252939;
+    --text: #eef1f6;
+    --text-2: rgba(238, 241, 246, 0.62);
+    --text-3: rgba(238, 241, 246, 0.40);
+    --text-4: rgba(238, 241, 246, 0.22);
+
+    --accent: #ada8ff;
+    --accent-line: color-mix(in srgb, var(--accent) 38%, transparent);
+    --accent-dim: color-mix(in srgb, var(--accent) 14%, transparent);
+
+    --warm: #f2c58b;
+    --warm-line: rgba(242, 197, 139, 0.42);
+    --warm-dim: rgba(242, 197, 139, 0.13);
+
+    --hair: 1px solid rgba(255, 255, 255, 0.07);
+    --hair-2: 1px solid rgba(255, 255, 255, 0.12);
+    --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0) 44%), var(--ink-2);
+    --shadow: 0 28px 64px -26px rgba(0, 0, 0, 0.85), 0 8px 20px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 12px 30px -16px rgba(0, 0, 0, 0.72);
+  }
+
   html, body {
-    margin: 0; background: transparent; color: #F2F3F5;
-    font-family: -apple-system, "SF Pro Text", system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased; user-select: none; cursor: default;
+    margin: 0;
+    color: var(--text);
+    font-family: var(--font);
+    background: transparent;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    cursor: default;
   }
   h1, h2, h3, p { margin: 0; }
+
+  /* unified thin nocturnal scrollbar (all windows) */
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.26); background-clip: padding-box; }
+  ::-webkit-scrollbar-corner { background: transparent; }
+
+  @keyframes nyx-breathe { 0%, 100% { transform: scale(0.9); opacity: 0.30; } 50% { transform: scale(1.09); opacity: 0.75; } }
+  @keyframes nyx-glow    { 0%, 100% { transform: scale(0.95); opacity: 0.9; } 50% { transform: scale(1.06); opacity: 1; } }
+  @keyframes nyx-twinkle { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.7; } }
+  @keyframes nyx-floaty  { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; }
+  }
 }
 
 @layer components {
-  .nyx-card { @apply rounded-xl p-3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); }
+  /* window backdrops (opaque nocturnal surfaces w/ a top-lit accent bloom) */
+  .nyx-body-panel {
+    background:
+      radial-gradient(120% 74% at 50% -12%, var(--accent-dim), transparent 60%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0) 40%),
+      var(--ink-1);
+  }
+  .nyx-body-window {
+    background:
+      radial-gradient(88% 56% at 50% -8%, var(--accent-dim), transparent 55%),
+      var(--ink-1);
+  }
+
+  /* native title-bar drag strip (clears the traffic lights on hiddenInset windows) */
+  .nyx-titlebar { height: 28px; flex: none; -webkit-app-region: drag; }
+
+  .nyx-card { border: var(--hair); border-radius: 14px; background: var(--surface); }
   .nyx-row { @apply flex items-center justify-between; }
-  .nyx-muted { color: rgba(242,243,245,0.55); }
+  .nyx-muted { color: var(--text-2); }
+  .nyx-faint { color: var(--text-3); }
+  .nyx-mono { font-family: var(--mono); }
+  .nyx-seclabel { font: 600 11px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); }
 
-  .nyx-btn { @apply rounded-lg px-3 py-2 text-[13px] flex items-center justify-center gap-2 transition-colors;
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); color: #F2F3F5; }
-  .nyx-btn:hover { background: rgba(255,255,255,0.12); }
-  .nyx-btn-primary { background: var(--accent); color: #0B0E14; border-color: transparent; }
-  .nyx-btn-primary:hover { filter: brightness(1.08); }
+  /* buttons */
+  .nyx-btn {
+    @apply rounded-lg flex items-center justify-center gap-2 transition-colors;
+    padding: 7px 14px; font: 500 12.5px var(--font);
+    background: rgba(255, 255, 255, 0.07); border: var(--hair); color: var(--text);
+  }
+  .nyx-btn:hover { background: rgba(255, 255, 255, 0.12); }
+  .nyx-btn:active { background: rgba(255, 255, 255, 0.05); }
+  .nyx-btn-primary { background: var(--accent); color: #161228; border-color: transparent; font-weight: 600; }
+  .nyx-btn-primary:hover { filter: brightness(1.06); background: var(--accent); }
 
-  .nyx-switch { position: relative; width: 38px; height: 22px; display: inline-block; flex: none; }
+  /* status pill (header) */
+  .nyx-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 4px 10px; border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05); border: var(--hair);
+    font: 600 11.5px var(--font); color: var(--text-2);
+  }
+  .nyx-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; background: var(--text-3); flex: none; }
+
+  /* inline help "?" with a hover tooltip */
+  .nyx-hint {
+    position: relative; display: inline-grid; place-items: center; flex: none;
+    width: 16px; height: 16px; border-radius: 50%; border: var(--hair-2);
+    font: 600 10px var(--font); color: var(--text-3); cursor: help;
+  }
+  .nyx-hint:hover { color: var(--text); border-color: var(--accent-line); }
+  .nyx-hint .tip {
+    position: absolute; top: calc(100% + 8px); left: 0; transform: none;
+    width: 232px; padding: 10px 12px; border-radius: 10px;
+    background: var(--ink-4); border: var(--hair-2); box-shadow: var(--shadow-sm);
+    font: 400 11.5px/1.5 var(--font); color: var(--text-2); text-align: left;
+    opacity: 0; visibility: hidden; transition: opacity 0.12s ease; z-index: 20; pointer-events: none;
+  }
+  .nyx-hint:hover .tip { opacity: 1; visibility: visible; }
+
+  /* segmented control */
+  .nyx-seg {
+    display: inline-flex; gap: 3px; padding: 3px; border-radius: 9px;
+    background: var(--ink-3); border: var(--hair);
+  }
+  .nyx-seg button {
+    border: 0; background: transparent; color: var(--text-2);
+    font: 500 12px var(--font); padding: 6px 12px; border-radius: 6px; cursor: pointer;
+    transition: color 0.12s ease, background 0.12s ease;
+  }
+  .nyx-seg button:hover { color: var(--text); }
+  .nyx-seg button.active { background: rgba(255, 255, 255, 0.09); color: var(--text); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); }
+
+  /* toggle switch */
+  .nyx-switch { position: relative; width: 40px; height: 24px; display: inline-block; flex: none; }
   .nyx-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
-  .nyx-switch .track { position: absolute; inset: 0; border-radius: 999px; background: rgba(255,255,255,0.15); transition: background .15s ease; pointer-events: none; }
-  .nyx-switch .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 999px; background: #fff; transition: transform .15s ease; box-shadow: 0 1px 2px rgba(0,0,0,.4); }
-  .nyx-switch input:checked + .track { background: var(--accent); }
-  .nyx-switch input:checked + .track::after { transform: translateX(16px); }
+  .nyx-switch .track { position: absolute; inset: 0; border-radius: 999px; background: rgba(255, 255, 255, 0.14); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); transition: background 0.15s ease; pointer-events: none; }
+  .nyx-switch .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 999px; background: #e6e6ea; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); transition: transform 0.15s ease; }
+  .nyx-switch input:checked + .track { background: var(--accent); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); }
+  .nyx-switch input:checked + .track::after { transform: translateX(16px); background: #fff; }
 
-  .nyx-seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); }
-  .nyx-seg button { border: 0; background: transparent; color: #F2F3F5; font-size: 12px; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
-  .nyx-seg button.active { background: rgba(255,255,255,0.14); box-shadow: 0 1px 2px rgba(0,0,0,.3); }
-
+  /* number stepper */
   .nyx-stepper { display: inline-flex; align-items: center; gap: 4px; }
-  .nyx-stepper input { width: 52px; text-align: center; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); border-radius: 6px; padding: 3px 6px; color: #F2F3F5; font-size: 13px; }
-  .nyx-stepper button { width: 22px; height: 22px; border-radius: 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.10); color: #F2F3F5; cursor: pointer; line-height: 1; }
-  .nyx-stepper button:hover { background: rgba(255,255,255,0.14); }
+  .nyx-stepper input {
+    width: 50px; text-align: center;
+    background: var(--ink-3); border: var(--hair-2); border-radius: 7px;
+    padding: 5px 6px; color: var(--text); font: 500 13px var(--mono);
+  }
+  .nyx-stepper input::-webkit-inner-spin-button, .nyx-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .nyx-stepper button {
+    width: 24px; height: 24px; border-radius: 7px; line-height: 1;
+    background: rgba(255, 255, 255, 0.06); border: var(--hair); color: var(--text-2); cursor: pointer;
+    transition: background 0.12s ease;
+  }
+  .nyx-stepper button:hover { background: rgba(255, 255, 255, 0.13); color: var(--text); }
 
-  .nyx-icon { display: inline-block; width: 16px; height: 16px; background: currentColor;
-    -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; -webkit-mask-size: contain; }
-  .icon-moon { -webkit-mask-image: url('../icons/moon.svg'); }
-  .icon-settings { -webkit-mask-image: url('../icons/sliders-horizontal.svg'); }
-  .icon-calibrate { -webkit-mask-image: url('../icons/scan-face.svg'); }
-  .icon-power { -webkit-mask-image: url('../icons/power.svg'); }
-  .icon-camera { -webkit-mask-image: url('../icons/camera.svg'); }
+  /* crescent brand mark (CSS-masked gradient — sized inline per use) */
+  .nyx-mark {
+    border-radius: 50%;
+    background: linear-gradient(140deg, #e0ddff, var(--accent));
+    -webkit-mask: radial-gradient(circle at 70% 30%, transparent 54%, #000 55%);
+    mask: radial-gradient(circle at 70% 30%, transparent 54%, #000 55%);
+    flex: none;
+  }
 
-  .nyx-dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; }
+  /* breathing status orb (rings + core sized inline per surface) */
+  .nyx-orb { position: relative; display: grid; place-items: center; }
+  .nyx-orb-ring { position: absolute; border-radius: 50%; border: 1px solid var(--accent-line); animation: nyx-breathe 5s ease-in-out infinite; }
+  .nyx-orb-core {
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #efeeff, var(--accent));
+    box-shadow: 0 0 22px var(--accent-line), 0 0 44px var(--accent-dim);
+    animation: nyx-glow 5s ease-in-out infinite;
+  }
+  .nyx-orb--warm .nyx-orb-ring { border-color: var(--warm-line); }
+  .nyx-orb--warm .nyx-orb-core { background: radial-gradient(circle at 40% 35%, #fff0da, var(--warm)); box-shadow: 0 0 30px var(--warm-line); }
+  .nyx-orb--idle .nyx-orb-ring { border-color: rgba(255, 255, 255, 0.09); animation: none; }
+  .nyx-orb--idle .nyx-orb-core { background: var(--ink-4); border: var(--hair-2); box-shadow: none; animation: none; }
+
+  /* film-poster placeholder thumbnail */
+  .nyx-thumb {
+    border: var(--hair); border-radius: 5px; flex: none;
+    background:
+      repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06) 4px, transparent 4px, transparent 9px),
+      var(--ink-3);
+  }
+
+  /* recolorable line icons (Lucide, mask-tinted to currentColor) */
+  .nyx-icon {
+    display: inline-block; width: 16px; height: 16px; background: currentColor;
+    -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; -webkit-mask-size: contain;
+    mask-repeat: no-repeat; mask-position: center; mask-size: contain;
+  }
+  .icon-moon { -webkit-mask-image: url('../icons/moon.svg'); mask-image: url('../icons/moon.svg'); }
+  .icon-settings { -webkit-mask-image: url('../icons/sliders-horizontal.svg'); mask-image: url('../icons/sliders-horizontal.svg'); }
+  .icon-calibrate { -webkit-mask-image: url('../icons/scan-face.svg'); mask-image: url('../icons/scan-face.svg'); }
+  .icon-power { -webkit-mask-image: url('../icons/power.svg'); mask-image: url('../icons/power.svg'); }
+  .icon-camera { -webkit-mask-image: url('../icons/camera.svg'); mask-image: url('../icons/camera.svg'); }
 }

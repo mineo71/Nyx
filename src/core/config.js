@@ -1,6 +1,6 @@
 const DEFAULTS = {
   nightHours: { enabled: false, start: 21, end: 7 }, // 24h clock; [start, end)
-  intervals: { baselineMs: 4000, confirmMs: 1500 },
+  intervals: { baselineMs: 60000, confirmMs: 1500 }, // baseline = camera check cadence while WATCHING
   tAsleepMs: 90000,            // continuous eyes-closed before escalating
   finalAction: 'sleep',        // 'sleep' | 'displayOff' | 'pauseOnly'
   eyeCloseThreshold: 0.5,      // avg blink blendshape >= this => eyes closed

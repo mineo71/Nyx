@@ -34,7 +34,8 @@ window.nyx.onCalibrateScore((_e, sample) => {
 });
 
 captureBtn.addEventListener('click', () => {
-  if (done || count >= NEEDED) return;
+  if (done) { window.nyx.calibrationDone(); return; } // finish → close + open app
+  if (count >= NEEDED) return;
   window.nyx.requestCalibrationSample(phase);
   count += 1;
   play(tick);
@@ -47,10 +48,14 @@ captureBtn.addEventListener('click', () => {
       status.textContent = '';
     } else {
       done = true;
-      captureBtn.disabled = true;
-      captureBtn.textContent = t('calib.complete');
+      captureBtn.textContent = t('calib.done');
       instruction.textContent = t('calib.doneMsg');
       play(chime);
     }
   }
+});
+
+// Space captures a sample (or confirms Done).
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); captureBtn.click(); }
 });

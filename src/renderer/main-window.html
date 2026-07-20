@@ -7,32 +7,202 @@
     <script src="./i18n/strings.js"></script>
     <script src="./i18n/i18n.js"></script>
   </head>
-  <body class="min-h-screen p-8 flex flex-col gap-6">
-    <div class="nyx-row">
-      <div class="flex items-center gap-2 text-lg font-semibold"><span class="nyx-icon icon-moon" style="color:var(--accent)"></span> Nyx</div>
-      <div class="flex items-center gap-2 text-sm nyx-muted"><span id="dot" class="nyx-dot"></span><span id="stateLabel">Idle</span></div>
-    </div>
+  <body class="nyx-body-window flex flex-col" style="height:100vh;overflow:hidden">
+    <div class="nyx-titlebar"></div>
 
-    <div class="nyx-card flex flex-col gap-4">
-      <div>
-        <h1 id="statusLine" class="text-[28px] font-medium">Idle</h1>
-        <p id="statusSub" class="text-sm mt-1 nyx-muted">Waiting for something to play</p>
-      </div>
-      <div class="nyx-row">
-        <span class="text-[13px] nyx-muted" data-i18n="monitoring">Monitoring</span>
-        <div class="nyx-seg" id="mode" data-value="auto">
-          <button data-value="auto" data-i18n="mode.auto">Auto</button><button data-value="off" data-i18n="mode.off">Off</button><button data-value="snooze" data-i18n="mode.snooze">Snooze</button>
+    <!-- ================= DASHBOARD ================= -->
+    <div id="viewDashboard" class="flex-1 min-h-0 flex flex-col">
+      <div class="nyx-row px-8 pt-1 pb-4 flex-none">
+        <div class="flex items-center gap-2.5">
+          <span class="nyx-mark" style="width:24px;height:24px;filter:drop-shadow(0 0 8px var(--accent-line))"></span>
+          <span class="text-[15px] font-semibold">Nyx</span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="nyx-pill h-[34px] rounded-lg px-3.5"><span id="dot" class="nyx-dot"></span><span id="stateLabel">Idle</span></span>
+          <button id="navSettings" class="nyx-btn p-0" style="width:34px;height:34px" title="Settings"><span class="nyx-icon icon-settings"></span></button>
         </div>
       </div>
-      <div class="flex gap-2">
-        <button id="calibrate" class="nyx-btn"><span class="nyx-icon icon-calibrate"></span><span data-i18n="btn.calibrate">Calibrate</span></button>
-        <button id="settings" class="nyx-btn"><span class="nyx-icon icon-settings"></span><span data-i18n="btn.settings">Settings</span></button>
+
+      <div class="flex-1 min-h-0 overflow-y-auto">
+        <div class="w-full max-w-[680px] mx-auto px-8 pb-10 flex flex-col gap-8">
+          <!-- hero -->
+          <div class="flex flex-col items-center gap-6 pt-6">
+            <div id="orb" class="nyx-orb nyx-orb--idle" style="width:128px;height:128px">
+              <div class="nyx-orb-ring" style="width:128px;height:128px"></div>
+              <div class="nyx-orb-ring" style="width:90px;height:90px;animation-delay:.5s"></div>
+              <div class="nyx-orb-core" style="width:50px;height:50px"></div>
+            </div>
+            <div class="text-center">
+              <h1 id="statusLine" class="text-[38px] leading-[1.05] font-semibold tracking-[-0.02em]">Idle</h1>
+              <p id="statusSub" class="text-[16px] mt-3 nyx-muted">Waiting for something to play</p>
+            </div>
+            <div class="nyx-seg" id="mode" data-value="auto">
+              <button data-value="auto" data-i18n="mode.auto">Auto</button>
+              <button data-value="off" data-i18n="mode.off">Off</button>
+              <button data-value="snooze" data-i18n="mode.snooze">Snooze</button>
+            </div>
+            <button id="watchToggle" class="nyx-btn" style="display:none" data-i18n="watch.start">Start watching now</button>
+          </div>
+
+          <!-- now watching (only while playback is detected) -->
+          <div id="npWrap" style="display:none">
+            <div class="text-[13px] font-semibold nyx-muted mb-1.5" data-i18n="nowWatching">Now watching</div>
+            <div class="nyx-card flex items-center gap-3.5 px-4 py-3">
+              <div class="nyx-thumb" style="width:56px;height:36px"></div>
+              <div class="flex-1 min-w-0">
+                <div id="npTitle" class="text-sm font-medium truncate">—</div>
+                <div id="npApp" class="text-[12px] nyx-faint mt-0.5"></div>
+              </div>
+              <span class="nyx-dot" style="background:var(--accent);box-shadow:0 0 8px var(--accent);animation:nyx-glow 5s ease-in-out infinite"></span>
+            </div>
+          </div>
+
+          <!-- recent nights -->
+          <div class="pt-2">
+            <div class="text-[13px] font-semibold nyx-muted mb-1.5" data-i18n="main.recentNights">Recent nights</div>
+            <div id="recaps" class="flex flex-col"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="nyx-card flex flex-col gap-2">
-      <div class="text-[12px] uppercase tracking-wide nyx-muted" data-i18n="main.recentNights">Recent nights</div>
-      <ul id="recaps" class="flex flex-col gap-2 text-sm"></ul>
+    <!-- ================= SETTINGS ================= -->
+    <div id="viewSettings" class="flex-1 min-h-0 flex flex-col" style="display:none">
+      <div class="nyx-row px-7 pt-1 pb-4 flex-none">
+        <div class="flex items-center gap-3">
+          <button id="navBack" class="nyx-btn p-0" style="width:34px;height:34px" title="Back"><span style="font-size:18px;line-height:1;margin-top:-2px">‹</span></button>
+          <span class="text-[17px] font-semibold" data-i18n="btn.settings">Settings</span>
+        </div>
+        <button id="calibrate" class="nyx-btn nyx-btn-primary" data-i18n="btn.calibrate">Calibrate</button>
+      </div>
+
+      <div class="flex-1 min-h-0 overflow-y-auto">
+        <div class="w-full max-w-[520px] mx-auto px-7 pb-8 flex flex-col gap-6">
+          <!-- Detection -->
+          <section class="flex flex-col gap-2.5">
+            <h3 class="nyx-seclabel px-1" data-i18n="settings.detection">Detection</h3>
+            <div class="nyx-card">
+              <div class="nyx-row px-4 py-3">
+                <div class="text-[13.5px] font-medium" data-i18n="settings.delay">Fall-asleep delay</div>
+                <div class="nyx-stepper" data-target="tAsleepSec" data-min="5" data-max="3600">
+                  <button data-step="-5">−</button><input id="tAsleepSec" type="number" min="5" max="3600" /><button data-step="5">+</button><span class="nyx-faint text-xs ml-1" data-i18n="unit.seconds">s</span>
+                </div>
+              </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <div class="text-[13.5px] font-medium" data-i18n="settings.threshold">Eye-closed threshold</div>
+                <div class="flex items-center gap-3"><span id="threshold" class="nyx-mono text-[13px] nyx-muted">—</span><button id="recalibrate" class="nyx-btn" data-i18n="settings.recalibrate">Recalibrate</button></div>
+              </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <div class="flex items-center gap-2">
+                  <span class="text-[13.5px] font-medium" data-i18n="settings.checkInterval">Camera check interval</span>
+                  <span class="nyx-hint" tabindex="0">?<span class="tip" data-i18n="settings.checkIntervalHelp">How often Nyx checks the camera while you're watching.</span></span>
+                </div>
+                <div class="nyx-stepper" data-target="checkIntervalSec" data-min="10" data-max="600">
+                  <button data-step="-10">−</button><input id="checkIntervalSec" type="number" min="10" max="600" /><button data-step="10">+</button><span class="nyx-faint text-xs ml-1" data-i18n="unit.seconds">s</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Escalation -->
+          <section class="flex flex-col gap-2.5">
+            <h3 class="nyx-seclabel px-1" data-i18n="settings.escalation">Escalation</h3>
+            <div class="nyx-card">
+              <div class="nyx-row px-4 py-3">
+                <div class="text-[13.5px] font-medium" data-i18n="settings.nudgeWait">Nudge wait</div>
+                <div class="nyx-stepper" data-target="nudgeWaitSec" data-min="5" data-max="600">
+                  <button data-step="-5">−</button><input id="nudgeWaitSec" type="number" min="5" max="600" /><button data-step="5">+</button><span class="nyx-faint text-xs ml-1" data-i18n="unit.seconds">s</span>
+                </div>
+              </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <div class="text-[13.5px] font-medium" data-i18n="settings.pauseWait">Pause wait</div>
+                <div class="nyx-stepper" data-target="pauseWaitSec" data-min="5" data-max="600">
+                  <button data-step="-5">−</button><input id="pauseWaitSec" type="number" min="5" max="600" /><button data-step="5">+</button><span class="nyx-faint text-xs ml-1" data-i18n="unit.seconds">s</span>
+                </div>
+              </div>
+              <div class="px-4 py-3" style="border-top: var(--hair)">
+                <div class="text-[13.5px] font-medium mb-2.5" data-i18n="settings.finalAction">Final action</div>
+                <div class="nyx-seg w-full" id="finalAction" data-value="sleep">
+                  <button class="flex-1" data-value="sleep" data-i18n="final.sleep">Sleep</button><button class="flex-1" data-value="displayOff" data-i18n="final.display">Display</button><button class="flex-1" data-value="pauseOnly" data-i18n="final.pause">Pause</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Night hours -->
+          <section class="flex flex-col gap-2.5">
+            <h3 class="nyx-seclabel px-1" data-i18n="settings.night">Night hours</h3>
+            <div class="nyx-card">
+              <div class="nyx-row px-4 py-3">
+                <label class="text-[13.5px] font-medium" data-i18n="settings.onlyNight">Only monitor at night</label>
+                <label class="nyx-switch"><input id="nightHoursEnabled" type="checkbox" /><span class="track"></span></label>
+              </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <span class="text-[13.5px] font-medium" data-i18n="settings.window">Window</span>
+                <div class="flex items-center gap-2 nyx-faint text-xs">
+                  <span data-i18n="settings.from">from</span> <div class="nyx-stepper" data-target="nightHoursStart" data-min="0" data-max="23"><button data-step="-1">−</button><input id="nightHoursStart" type="number" min="0" max="23" /><button data-step="1">+</button></div>
+                  <span data-i18n="settings.to">to</span> <div class="nyx-stepper" data-target="nightHoursEnd" data-min="0" data-max="23"><button data-step="-1">−</button><input id="nightHoursEnd" type="number" min="0" max="23" /><button data-step="1">+</button></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- General -->
+          <section class="flex flex-col gap-2.5">
+            <h3 class="nyx-seclabel px-1" data-i18n="settings.general">General</h3>
+            <div class="nyx-card">
+              <div class="nyx-row px-4 py-3">
+                <label class="text-[13.5px] font-medium" data-i18n="settings.launchLogin">Launch at login</label>
+                <label class="nyx-switch"><input id="openAtLogin" type="checkbox" /><span class="track"></span></label>
+              </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <label class="text-[13.5px] font-medium"><span data-i18n="settings.logData">Log detection data</span> <span class="nyx-faint" data-i18n="settings.numbersOnly">(numbers only)</span></label>
+                <div class="flex items-center gap-3">
+                  <button id="revealLog" class="nyx-btn" data-i18n="settings.revealLog">Reveal log</button>
+                  <label class="nyx-switch"><input id="logDetection" type="checkbox" /><span class="track"></span></label>
+                </div>
+              </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <label class="text-[13.5px] font-medium" data-i18n="settings.language">Language</label>
+                <div class="nyx-seg" id="language" data-value="auto">
+                  <button data-value="auto" data-i18n="lang.auto">Auto</button><button data-value="en">EN</button><button data-value="uk">UK</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Developer · live detection readout -->
+          <section class="flex flex-col gap-2.5">
+            <h3 class="nyx-seclabel px-1">Developer · live detection</h3>
+            <div class="nyx-card">
+              <div class="nyx-row px-4 py-3">
+                <span class="text-[13.5px] font-medium">Eyes</span>
+                <span id="dbgCls" class="nyx-mono text-[13px] nyx-faint">— idle</span>
+              </div>
+              <div class="px-4 py-3" style="border-top: var(--hair)">
+                <div class="nyx-row"><span class="text-[13.5px] font-medium">Eye-closed score</span><span id="dbgAvg" class="nyx-mono text-[13px] nyx-muted">—</span></div>
+                <div class="relative mt-2.5" style="height:8px;border-radius:4px;background:var(--ink-3)">
+                  <div id="dbgBar" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--accent);border-radius:4px;transition:width .1s linear,background .1s"></div>
+                  <div id="dbgThreshMark" title="threshold" style="position:absolute;top:-2px;bottom:-2px;left:50%;width:2px;background:var(--warm)"></div>
+                </div>
+                <div class="flex justify-between text-[10px] nyx-faint mt-1"><span>0%</span><span>threshold <span id="dbgThresh" class="nyx-mono">—</span></span><span>100%</span></div>
+              </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <span class="text-[13.5px] font-medium">Left / Right</span>
+                <span class="nyx-mono text-[13px] nyx-muted"><span id="dbgLeft">—</span> / <span id="dbgRight">—</span></span>
+              </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <span class="text-[13.5px] font-medium">Head pitch</span>
+                <span class="nyx-mono text-[13px] nyx-muted"><span id="dbgPitch">—</span> <span id="dbgHead" class="nyx-faint" style="color:var(--warm)"></span></span>
+              </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <span class="text-[13.5px] font-medium">PERCLOS (window)</span>
+                <span id="dbgPerclos" class="nyx-mono text-[13px] nyx-muted">—</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
 
     <script src="./main-window.js"></script>
