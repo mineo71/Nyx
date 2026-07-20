@@ -41,7 +41,12 @@ async function renderRecaps() {
     const li = document.createElement('li');
     li.className = 'nyx-row';
     const when = new Date(r.timestamp);
-    li.innerHTML = `<span>"${r.title}"</span><span class="nyx-muted">${when.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>`;
+    const title = document.createElement('span');
+    title.textContent = `"${r.title}"`;
+    const meta = document.createElement('span');
+    meta.className = 'nyx-muted';
+    meta.textContent = `${when.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+    li.append(title, meta);
     recapsEl.appendChild(li);
   }
 }
