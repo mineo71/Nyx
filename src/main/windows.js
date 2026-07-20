@@ -1,9 +1,9 @@
-const { BrowserWindow, screen } = require('electron');
+const { BrowserWindow, screen, app } = require('electron');
 const path = require('node:path');
 
 const PRELOAD = path.join(__dirname, '..', 'renderer', 'preload.js');
 
-let accentHex = '7C8CF8';
+let accentHex = 'ada8ff';
 function setAccent(hex) { if (hex) accentHex = hex; }
 
 let langCode = 'en';
@@ -56,11 +56,14 @@ function showCalibration() {
   calibrationWin.on('closed', () => { calibrationWin = null; });
   return calibrationWin;
 }
+function closeCalibration() {
+  if (calibrationWin && !calibrationWin.isDestroyed()) calibrationWin.close();
+}
 
 let panelWin = null;
 function createPanelWindow() {
   panelWin = new BrowserWindow({
-    width: 300, height: 380,
+    width: 320, height: 440,
     show: false, frame: false, resizable: false, movable: false,
     transparent: true, vibrancy: 'popover', visualEffectState: 'active', roundedCorners: true,
     backgroundColor: '#00000000', alwaysOnTop: true, skipTaskbar: true, fullscreenable: false,
@@ -70,31 +73,43 @@ function createPanelWindow() {
   return panelWin;
 }
 
-let settingsWin = null;
-function showSettings() {
-  if (settingsWin) { settingsWin.focus(); return settingsWin; }
-  settingsWin = new BrowserWindow({
-    width: 460, height: 600, resizable: false, title: 'Nyx Settings',
+let onboardingWin = null;
+function showOnboarding() {
+  if (onboardingWin && !onboardingWin.isDestroyed()) { onboardingWin.focus(); return onboardingWin; }
+  onboardingWin = new BrowserWindow({
+    width: 560, height: 640, resizable: false, title: 'Welcome to Nyx',
     transparent: true, vibrancy: 'under-window', visualEffectState: 'active',
     backgroundColor: '#00000000', titleBarStyle: 'hiddenInset',
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
-  settingsWin.loadFile(path.join(__dirname, '..', 'renderer', 'settings.html'), { query: { accent: accentHex, lang: langCode } });
-  settingsWin.on('closed', () => { settingsWin = null; });
-  return settingsWin;
+  onboardingWin.loadFile(path.join(__dirname, '..', 'renderer', 'onboarding.html'), { query: { accent: accentHex, lang: langCode } });
+  onboardingWin.on('closed', () => { onboardingWin = null; });
+  return onboardingWin;
+}
+function closeOnboarding() {
+  if (onboardingWin && !onboardingWin.isDestroyed()) onboardingWin.close();
+  onboardingWin = null;
 }
 
 let mainWin = null;
 function showMainWindow() {
+  if (app && app.dock) app.dock.show(); // window visible => show in Dock
   if (mainWin && !mainWin.isDestroyed()) { mainWin.show(); mainWin.focus(); return mainWin; }
   mainWin = new BrowserWindow({
-    width: 760, height: 560, minWidth: 620, minHeight: 460,
+    width: 820, height: 780, minWidth: 640, minHeight: 640,
     transparent: true, vibrancy: 'under-window', visualEffectState: 'active',
     backgroundColor: '#00000000', titleBarStyle: 'hiddenInset', title: 'Nyx',
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
   mainWin.loadFile(path.join(__dirname, '..', 'renderer', 'main-window.html'), { query: { accent: accentHex, lang: langCode } });
-  mainWin.on('close', (e) => { if (!appQuitting) { e.preventDefault(); mainWin.hide(); } });
+  // Closing the window doesn't quit — it retreats to the menu bar and drops the Dock icon.
+  mainWin.on('close', (e) => {
+    if (!appQuitting) {
+      e.preventDefault();
+      mainWin.hide();
+      if (app && app.dock) app.dock.hide();
+    }
+  });
   return mainWin;
 }
 function getMainWindow() { return (mainWin && !mainWin.isDestroyed()) ? mainWin : null; }
@@ -103,9 +118,9 @@ function relocalize() {
   const q = { query: { accent: accentHex, lang: langCode } };
   const rl = (w, file) => { if (w && !w.isDestroyed()) w.loadFile(path.join(__dirname, '..', 'renderer', file), q); };
   rl(panelWin, 'panel.html');
-  rl(settingsWin, 'settings.html');
   rl(calibrationWin, 'calibration.html');
   rl(mainWin, 'main-window.html');
+  rl(onboardingWin, 'onboarding.html');
 }
 
-module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent, showMainWindow, getMainWindow, markQuitting, setLang, relocalize };
+module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, closeCalibration, createPanelWindow, setAccent, showMainWindow, getMainWindow, markQuitting, setLang, relocalize, showOnboarding, closeOnboarding };

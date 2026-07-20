@@ -3,7 +3,7 @@ import { clampSettingsView, FINAL_ACTIONS, DEFAULT_VIEW } from '../../src/core/s
 
 describe('clampSettingsView', () => {
   it('passes through valid values unchanged', () => {
-    const v = { tAsleepSec: 90, nudgeWaitSec: 30, pauseWaitSec: 45, finalAction: 'sleep',
+    const v = { tAsleepSec: 90, checkIntervalSec: 60, nudgeWaitSec: 30, pauseWaitSec: 45, finalAction: 'sleep',
       nightHoursEnabled: true, nightHoursStart: 21, nightHoursEnd: 7, openAtLogin: false,
       logDetection: true, language: 'auto' };
     expect(clampSettingsView(v)).toEqual(v);

@@ -7,36 +7,67 @@
     <script src="./i18n/strings.js"></script>
     <script src="./i18n/i18n.js"></script>
   </head>
-  <body class="w-[300px] h-[380px] p-4 flex flex-col gap-4">
-    <div class="nyx-row">
-      <div class="flex items-center gap-2 font-semibold"><span class="nyx-icon icon-moon" style="color:var(--accent)"></span> Nyx</div>
-      <div class="flex items-center gap-2 text-xs nyx-muted"><span id="dot" class="nyx-dot"></span><span id="stateLabel">Idle</span></div>
+  <body class="nyx-body-panel w-[320px] flex flex-col">
+    <!-- header -->
+    <div class="nyx-row px-4 pt-3.5 pb-3" style="border-bottom: var(--hair)">
+      <div class="flex items-center gap-2.5">
+        <span class="nyx-mark" style="width:22px;height:22px;filter:drop-shadow(0 0 6px var(--accent-line))"></span>
+        <span class="text-sm font-semibold">Nyx</span>
+      </div>
+      <span class="nyx-pill"><span id="dot" class="nyx-dot"></span><span id="stateLabel">Idle</span></span>
     </div>
 
-    <div>
-      <h2 id="statusLine" class="text-[20px] font-medium">Idle</h2>
-      <p id="statusSub" class="text-xs mt-1 nyx-muted">Waiting for something to play</p>
-    </div>
-
-    <div class="nyx-card">
-      <div class="text-[11px] uppercase tracking-wide nyx-muted" data-i18n="panel.lastNight">Last night</div>
-      <div id="recapTitle" class="text-sm mt-1">No sleep events yet</div>
-      <div id="recapTime" class="text-xs nyx-muted"></div>
-    </div>
-
-    <div class="nyx-row">
-      <span class="text-[13px] nyx-muted" data-i18n="monitoring">Monitoring</span>
-      <div class="nyx-seg" id="mode" data-value="auto">
-        <button data-value="auto" data-i18n="mode.auto">Auto</button>
-        <button data-value="off" data-i18n="mode.off">Off</button>
-        <button data-value="snooze" data-i18n="mode.snooze">Snooze</button>
+    <!-- hero -->
+    <div class="flex flex-col items-center gap-4 px-5 pt-6 pb-5">
+      <div id="orb" class="nyx-orb nyx-orb--idle" style="width:78px;height:78px">
+        <div class="nyx-orb-ring" style="width:78px;height:78px"></div>
+        <div class="nyx-orb-ring" style="width:54px;height:54px;animation-delay:.5s"></div>
+        <div class="nyx-orb-core" style="width:30px;height:30px"></div>
+      </div>
+      <div class="text-center">
+        <h2 id="statusLine" class="text-[17px] font-semibold tracking-[-0.01em]">Idle</h2>
+        <p id="statusSub" class="text-[12.5px] mt-1.5 nyx-muted">Waiting for something to play</p>
       </div>
     </div>
 
-    <div class="mt-auto flex gap-2">
-      <button id="settings" class="nyx-btn flex-1"><span class="nyx-icon icon-settings"></span><span data-i18n="btn.settings">Settings</span></button>
-      <button id="calibrate" class="nyx-btn flex-1"><span class="nyx-icon icon-calibrate"></span><span data-i18n="btn.calibrate">Calibrate</span></button>
-      <button id="quit" class="nyx-btn w-10" title="Quit Nyx"><span class="nyx-icon icon-power"></span></button>
+    <!-- now watching (only while playback is detected) -->
+    <div id="npRow" class="px-4 py-3.5" style="border-top: var(--hair);display:none">
+      <div class="nyx-seclabel mb-2.5" data-i18n="nowWatching">Now watching</div>
+      <div class="flex-1 min-w-0">
+        <div id="npTitle" class="text-[13px] font-medium truncate">—</div>
+        <div id="npApp" class="text-[11.5px] nyx-faint mt-0.5"></div>
+      </div>
+    </div>
+
+    <!-- last night -->
+    <div class="px-4 py-3.5" style="border-top: var(--hair)">
+      <div class="nyx-seclabel mb-2.5" data-i18n="panel.lastNight">Last night</div>
+      <div class="flex items-center gap-3">
+        <div class="nyx-thumb" style="width:44px;height:30px"></div>
+        <div class="flex-1 min-w-0">
+          <div id="recapTitle" class="text-[13px] font-medium truncate">No sleep events yet</div>
+          <div id="recapTime" class="text-[11.5px] nyx-faint mt-0.5"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- monitoring -->
+    <div class="px-4 py-3 flex flex-col gap-2.5" style="border-top: var(--hair)">
+      <div class="nyx-seg w-full" id="mode" data-value="auto">
+        <button class="flex-1" data-value="auto" data-i18n="mode.auto">Auto</button>
+        <button class="flex-1" data-value="off" data-i18n="mode.off">Off</button>
+        <button class="flex-1" data-value="snooze" data-i18n="mode.snooze">Snooze</button>
+      </div>
+      <button id="watchToggle" class="nyx-btn w-full" style="display:none" data-i18n="watch.start">Start watching now</button>
+    </div>
+
+    <!-- footer actions -->
+    <div class="flex text-[12.5px] nyx-muted" style="border-top: var(--hair)">
+      <button id="settings" class="flex-1 py-3 transition-colors hover:text-[color:var(--text)]" data-i18n="btn.settings">Settings</button>
+      <span style="width:1px;background:rgba(255,255,255,.07)"></span>
+      <button id="calibrate" class="flex-1 py-3 transition-colors hover:text-[color:var(--text)]" data-i18n="btn.calibrate">Calibrate</button>
+      <span style="width:1px;background:rgba(255,255,255,.07)"></span>
+      <button id="quit" class="flex-1 py-3 transition-colors hover:text-[color:var(--text)]" title="Quit Nyx" data-i18n="btn.quit">Quit</button>
     </div>
 
     <script src="./panel.js"></script>

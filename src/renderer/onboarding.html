@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./styles/app.css" />
+    <script src="./accent-init.js"></script>
+    <script src="./i18n/strings.js"></script>
+    <script src="./i18n/i18n.js"></script>
+    <style>
+      body { height: 100vh; overflow: hidden; }
+      .onb-step { display: none; flex: 1; flex-direction: column; min-height: 0; }
+      .onb-step.active { display: flex; }
+      .onb-star { position: absolute; border-radius: 50%; background: #fff; animation: nyx-twinkle 5s ease-in-out infinite; }
+      .onb-dots { display: flex; gap: 7px; }
+      .onb-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.16); }
+      .onb-dots span.on { background: var(--accent); }
+      .onb-bullet { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-top: 6px; flex: none; box-shadow: 0 0 8px var(--accent-line); }
+      .onb-lock { width: 22px; height: 26px; border: 2px solid var(--accent); border-radius: 5px 5px 3px 3px; }
+      .onb-primary { width: 100%; padding: 12px; border-radius: 10px; text-align: center; background: var(--accent); color: #161228; font: 600 14px var(--font); border: 0; cursor: pointer; }
+      .onb-primary:hover { filter: brightness(1.06); }
+      .onb-ghost { padding: 12px; text-align: center; background: rgba(255,255,255,0.08); border: var(--hair); color: var(--text-2); font: 600 14px var(--font); border-radius: 10px; cursor: pointer; }
+    </style>
+  </head>
+  <body class="nyx-body-window flex flex-col">
+    <div class="nyx-titlebar" style="position:relative;z-index:3"></div>
+
+    <!-- ambient stars -->
+    <span class="onb-star" style="width:3px;height:3px;top:80px;left:90px"></span>
+    <span class="onb-star" style="width:2px;height:2px;top:130px;right:110px;animation-delay:1s"></span>
+    <span class="onb-star" style="width:2px;height:2px;top:210px;left:64px;animation-delay:.6s"></span>
+    <span class="onb-star" style="width:3px;height:3px;top:170px;right:70px;animation-delay:.3s"></span>
+
+    <!-- 1 · Welcome -->
+    <section class="onb-step active" data-step="0">
+      <div class="flex-1 flex flex-col items-center justify-center gap-6 px-12 text-center">
+        <span class="nyx-mark" style="width:96px;height:96px;filter:drop-shadow(0 0 26px var(--accent-line));animation:nyx-floaty 6s ease-in-out infinite"></span>
+        <div>
+          <div class="text-[44px] leading-none font-semibold tracking-[-0.02em]">Nyx</div>
+          <p class="text-[17px] leading-[1.5] nyx-muted mt-4 max-w-[360px] mx-auto" data-i18n="onb.welcome.tag"></p>
+        </div>
+      </div>
+      <div class="px-12 pb-9 flex flex-col items-center gap-[18px]">
+        <button class="onb-primary" data-next data-i18n="onb.getStarted">Get started</button>
+        <div class="onb-dots"><span class="on"></span><span></span><span></span><span></span></div>
+      </div>
+    </section>
+
+    <!-- 2 · Privacy -->
+    <section class="onb-step" data-step="1">
+      <div class="flex-1 flex flex-col justify-center gap-8 px-12">
+        <div class="flex flex-col items-center gap-5 text-center">
+          <div class="grid place-items-center" style="width:64px;height:64px;border-radius:16px;background:var(--accent-dim);border:1px solid var(--accent-line)"><div class="onb-lock"></div></div>
+          <div class="text-[27px] font-semibold tracking-[-0.01em]" data-i18n="onb.privacy.title">Private by design</div>
+        </div>
+        <div class="flex flex-col gap-4">
+          <div class="flex gap-3.5 items-start"><span class="onb-bullet"></span><div><div class="text-[15px] font-medium" data-i18n="onb.privacy.b1t"></div><div class="text-[13px] leading-[1.5] nyx-muted mt-0.5" data-i18n="onb.privacy.b1d"></div></div></div>
+          <div class="flex gap-3.5 items-start"><span class="onb-bullet"></span><div><div class="text-[15px] font-medium" data-i18n="onb.privacy.b2t"></div><div class="text-[13px] leading-[1.5] nyx-muted mt-0.5" data-i18n="onb.privacy.b2d"></div></div></div>
+          <div class="flex gap-3.5 items-start"><span class="onb-bullet"></span><div><div class="text-[15px] font-medium" data-i18n="onb.privacy.b3t"></div><div class="text-[13px] leading-[1.5] nyx-muted mt-0.5" data-i18n="onb.privacy.b3d"></div></div></div>
+        </div>
+      </div>
+      <div class="px-12 pb-9 flex flex-col items-center gap-[18px]">
+        <button class="onb-primary" data-next data-i18n="onb.continue">Continue</button>
+        <div class="onb-dots"><span></span><span class="on"></span><span></span><span></span></div>
+      </div>
+    </section>
+
+    <!-- 3 · Permissions -->
+    <section class="onb-step" data-step="2">
+      <div class="flex-1 flex flex-col justify-center gap-6 px-11">
+        <div class="text-center">
+          <div class="text-[27px] font-semibold tracking-[-0.01em]" data-i18n="onb.perm.title">Two quick permissions</div>
+          <p class="text-[14px] leading-[1.5] nyx-muted mt-2" data-i18n="onb.perm.sub"></p>
+        </div>
+        <div class="flex flex-col gap-3.5">
+          <!-- Camera -->
+          <div id="camRow" class="flex items-center gap-4 p-[18px] nyx-card">
+            <div class="grid place-items-center flex-none" style="width:44px;height:44px;border-radius:11px;background:var(--ink-3);border:var(--hair)"><span class="nyx-icon icon-camera" style="width:20px;height:20px;color:var(--text-2)"></span></div>
+            <div class="flex-1"><div class="text-[15px] font-semibold" data-i18n="onb.perm.cameraT">Camera</div><div class="text-[12.5px] leading-[1.45] nyx-muted mt-0.5" data-i18n="onb.perm.cameraD"></div></div>
+            <div id="camStatus"></div>
+          </div>
+          <!-- Accessibility -->
+          <div id="accRow" class="flex items-center gap-4 p-[18px] nyx-card">
+            <div class="grid place-items-center flex-none" style="width:44px;height:44px;border-radius:11px;background:var(--ink-3);border:var(--hair)"><span class="nyx-icon icon-settings" style="width:20px;height:20px;color:var(--text-2)"></span></div>
+            <div class="flex-1"><div class="text-[15px] font-semibold" data-i18n="onb.perm.accT">Accessibility</div><div class="text-[12.5px] leading-[1.45] nyx-muted mt-0.5" data-i18n="onb.perm.accD"></div></div>
+            <div id="accStatus"></div>
+          </div>
+        </div>
+        <div class="text-[12px] leading-[1.5] text-center" style="color:var(--text-4)" data-i18n="onb.perm.footHint"></div>
+      </div>
+      <div class="px-12 pb-9 flex flex-col items-center gap-[18px]">
+        <button id="permContinue" class="onb-primary" data-next></button>
+        <div class="onb-dots"><span></span><span></span><span class="on"></span><span></span></div>
+      </div>
+    </section>
+
+    <!-- 4 · Ready -->
+    <section class="onb-step" data-step="3">
+      <div class="flex-1 flex flex-col items-center justify-center gap-6 px-12 text-center">
+        <div class="nyx-orb" style="width:104px;height:104px">
+          <div class="nyx-orb-ring" style="width:104px;height:104px"></div>
+          <div class="nyx-orb-ring" style="width:72px;height:72px;animation-delay:.5s"></div>
+          <div class="nyx-orb-core" style="width:42px;height:42px"></div>
+        </div>
+        <div>
+          <div class="text-[27px] font-semibold tracking-[-0.01em]" data-i18n="onb.ready.title">One quick calibration</div>
+          <p class="text-[15px] leading-[1.5] nyx-muted mt-2.5 max-w-[360px] mx-auto" data-i18n="onb.ready.sub"></p>
+        </div>
+      </div>
+      <div class="px-12 pb-9 flex flex-col items-center gap-4">
+        <button id="calibrateNow" class="onb-primary" data-i18n="onb.ready.calibrate">Calibrate now</button>
+        <button id="skipCalibrate" class="text-[12.5px] nyx-faint" style="background:none;border:0;cursor:pointer" data-i18n="onb.skip">Skip for now</button>
+      </div>
+    </section>
+
+    <script src="./onboarding.js"></script>
+  </body>
+</html>

@@ -7,6 +7,15 @@ const statusSub = document.getElementById('statusSub');
 const recapTitle = document.getElementById('recapTitle');
 const recapTime = document.getElementById('recapTime');
 const modeSeg = document.getElementById('mode');
+const orb = document.getElementById('orb');
+
+function setOrb(state, cameraOk) {
+  if (!orb) return;
+  const warm = state === 'ESCALATING';
+  const idle = state === 'IDLE' || cameraOk === false;
+  orb.classList.toggle('nyx-orb--warm', warm);
+  orb.classList.toggle('nyx-orb--idle', idle && !warm);
+}
 
 function copyFor(state) {
   const map = {
@@ -26,6 +35,7 @@ function segSet(el, value) {
 function render(s) {
   const c = copyFor(s.state);
   dot.style.background = c.dot;
+  setOrb(s.state, s.cameraOk);
   stateLabel.textContent = c.label;
   statusLine.textContent = c.line;
   statusSub.textContent = s.cameraOk === false ? t('state.cameraOff') : c.sub;
@@ -33,11 +43,46 @@ function render(s) {
   if (s.recap) {
     recapTitle.textContent = `${t('panel.paused')} "${s.recap.title}"`;
     recapTime.textContent = `${t('panel.at')} ${new Date(s.recap.timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+    const url = s.recap.url;
+    recapTitle.style.cursor = url ? 'pointer' : '';
+    recapTitle.style.color = url ? 'var(--accent)' : '';
+    recapTitle.title = url || '';
+    recapTitle.onclick = url ? () => window.nyx.openExternal(url) : null;
   } else {
     recapTitle.textContent = t('panel.noEvents');
     recapTime.textContent = '';
+    recapTitle.style.cursor = ''; recapTitle.style.color = ''; recapTitle.onclick = null;
   }
   if (s.monitoringMode) segSet(modeSeg, s.monitoringMode);
+  renderNowPlaying(s.nowPlaying);
+  renderWatch(s);
+}
+
+const watchBtn = document.getElementById('watchToggle');
+function renderWatch(s) {
+  if (!watchBtn) return;
+  if (s.state === 'IDLE') { watchBtn.style.display = ''; watchBtn.textContent = t('watch.start'); }
+  else if (s.manualArm) { watchBtn.style.display = ''; watchBtn.textContent = t('watch.stop'); }
+  else { watchBtn.style.display = 'none'; } // auto-armed by playback
+}
+if (watchBtn) watchBtn.addEventListener('click', () => window.nyx.toggleWatch());
+
+const npRow = document.getElementById('npRow');
+function renderNowPlaying(np) {
+  if (!npRow) return;
+  if (np && np.title) {
+    npRow.style.display = 'block';
+    const titleEl = document.getElementById('npTitle');
+    titleEl.textContent = np.title;
+    document.getElementById('npApp').textContent = np.app || '';
+    const url = np.url;
+    titleEl.style.cursor = url ? 'pointer' : '';
+    titleEl.style.color = url ? 'var(--accent)' : '';
+    titleEl.title = url || '';
+    titleEl.onclick = url ? () => window.nyx.openExternal(url) : null;
+  } else {
+    npRow.style.display = 'none';
+  }
 }
 
 modeSeg.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
@@ -45,10 +90,19 @@ modeSeg.querySelectorAll('button').forEach((b) => b.addEventListener('click', ()
   window.nyx.setMonitoringMode(b.dataset.value);
 }));
 
-window.nyx.onPanelState((_e, s) => render(s));
+// Resize the popover window to hug its content (handles longer translated strings too).
+function syncHeight() {
+  requestAnimationFrame(() => {
+    const h = Math.ceil(document.body.getBoundingClientRect().height);
+    if (h > 0) window.nyx.setPanelHeight(h);
+  });
+}
+
+window.nyx.onPanelState((_e, s) => { render(s); syncHeight(); });
 document.getElementById('calibrate').addEventListener('click', () => window.nyx.openCalibration());
 document.getElementById('settings').addEventListener('click', () => window.nyx.openSettings());
 document.getElementById('quit').addEventListener('click', () => window.nyx.quit());
 
 segSet(modeSeg, 'auto');
 window.nyx.panelReady();
+syncHeight();

@@ -25,18 +25,43 @@ if (fsChk.existsSync(logoPath)) {
 
 function crc32(buf){let c=~0;for(let i=0;i<buf.length;i++){c^=buf[i];for(let k=0;k<8;k++)c=(c>>>1)^(0xEDB88320&-(c&1));}return ~c>>>0;}
 function chunk(type,data){const t=Buffer.from(type,'ascii');const len=Buffer.alloc(4);len.writeUInt32BE(data.length);const crc=Buffer.alloc(4);crc.writeUInt32BE(crc32(Buffer.concat([t,data])));return Buffer.concat([len,t,data,crc]);}
-function makePNG(size){
-  const cx=size/2,cy=size/2,r=size*0.40,ox=cx+size*0.20,oy=cy-size*0.12,orr=r*0.95;
-  const raw=Buffer.alloc(size*(size*4+1));let p=0;
-  for(let y=0;y<size;y++){raw[p++]=0;for(let x=0;x<size;x++){
-    const inMain=(x-cx)**2+(y-cy)**2<=r*r,inSub=(x-ox)**2+(y-oy)**2<=orr*orr,on=inMain&&!inSub;
-    const bg=(x-cx)**2+(y-cy)**2<=(size*0.48)**2;
-    if(on){raw[p++]=124;raw[p++]=140;raw[p++]=248;raw[p++]=255;}
-    else if(bg){raw[p++]=11;raw[p++]=14;raw[p++]=20;raw[p++]=255;}
-    else{raw[p++]=0;raw[p++]=0;raw[p++]=0;raw[p++]=0;}
-  }}
+const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
+function encode(size,raw){
   const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(size,0);ihdr.writeUInt32BE(size,4);ihdr[8]=8;ihdr[9]=6;
   return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',zlib.deflateSync(raw)),chunk('IEND',Buffer.alloc(0))]);
+}
+// crescent = a disc with an offset disc subtracted (matches the app's masked mark)
+function inCrescent(x,y,size){
+  const cx=size/2,cy=size/2,r=size*0.32,ox=cx+size*0.17,oy=cy-size*0.11,orr=r*0.98;
+  return (x-cx)**2+(y-cy)**2<=r*r && !((x-ox)**2+(y-oy)**2<=orr*orr);
+}
+// rounded-square membership for the dark squircle backdrop
+function inSquircle(x,y,size){
+  const pad=size*0.055,min=pad,max=size-pad,rr=size*0.225;
+  if(x<min||x>max||y<min||y>max) return false;
+  const cxL=min+rr,cxR=max-rr,cyT=min+rr,cyB=max-rr;let dx=0,dy=0;
+  if(x<cxL)dx=cxL-x; else if(x>cxR)dx=x-cxR;
+  if(y<cyT)dy=cyT-y; else if(y>cyB)dy=y-cyB;
+  return dx*dx+dy*dy<=rr*rr;
+}
+// App icon: moonlight-lavender crescent on a near-black squircle.
+function makePNG(size){
+  const raw=Buffer.alloc(size*(size*4+1));let p=0;
+  for(let y=0;y<size;y++){raw[p++]=0;for(let x=0;x<size;x++){
+    if(inCrescent(x,y,size)){const t=(x+y)/(2*size);raw[p++]=lerp(224,173,t);raw[p++]=lerp(221,168,t);raw[p++]=255;raw[p++]=255;}
+    else if(inSquircle(x,y,size)){const t=y/size;raw[p++]=lerp(27,11,t);raw[p++]=lerp(32,14,t);raw[p++]=lerp(48,20,t);raw[p++]=255;}
+    else{raw[p++]=0;raw[p++]=0;raw[p++]=0;raw[p++]=0;}
+  }}
+  return encode(size,raw);
+}
+// Menu-bar template: opaque-black crescent on transparent; macOS tints it for light/dark.
+function makeTemplatePNG(size){
+  const raw=Buffer.alloc(size*(size*4+1));let p=0;
+  for(let y=0;y<size;y++){raw[p++]=0;for(let x=0;x<size;x++){
+    if(inCrescent(x,y,size)){raw[p++]=0;raw[p++]=0;raw[p++]=0;raw[p++]=255;}
+    else{raw[p++]=0;raw[p++]=0;raw[p++]=0;raw[p++]=0;}
+  }}
+  return encode(size,raw);
 }
 
 const res=path.join(__dirname,'..','src','resources');
@@ -46,4 +71,6 @@ const specs=[[16,'16x16'],[32,'16x16@2x'],[32,'32x32'],[64,'32x32@2x'],[128,'128
 for(const [sz,name] of specs) fs.writeFileSync(path.join(set,`icon_${name}.png`),makePNG(sz));
 execFileSync('iconutil',['-c','icns','-o',path.join(res,'icon.icns'),set]);
 fs.rmSync(set,{recursive:true,force:true});
-console.log('wrote src/resources/icon.icns');
+fs.writeFileSync(path.join(res,'trayTemplate.png'),makeTemplatePNG(18));
+fs.writeFileSync(path.join(res,'trayTemplate@2x.png'),makeTemplatePNG(36));
+console.log('wrote src/resources/icon.icns + tray templates');

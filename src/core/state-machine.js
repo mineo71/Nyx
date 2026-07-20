@@ -17,6 +17,13 @@ class SleepStateMachine {
     this.on.arm();
   }
 
+  // Manual override: arm regardless of playback or the night-hours gate.
+  forceArm() {
+    if (this.state !== 'IDLE') return;
+    this.state = 'WATCHING';
+    this.on.arm();
+  }
+
   mediaStopped() {
     if (this.state === 'IDLE') return;
     const wasEscalationBound = this.state === 'DROWSY' || this.state === 'ESCALATING';
