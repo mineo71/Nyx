@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "description": "Menu-bar app that pauses playback and sleeps the Mac when you fall asleep watching.",
   "main": "src/main/main.js",
+  "repository": { "type": "git", "url": "git+https://github.com/mineo71/Nyx.git" },
+  "homepage": "https://github.com/mineo71/Nyx#readme",
+  "bugs": { "url": "https://github.com/mineo71/Nyx/issues" },
+  "keywords": ["macos", "menu-bar", "electron", "sleep", "drowsiness", "mediapipe", "face-landmarker", "webcam", "privacy", "on-device"],
   "scripts": {
     "start": "electron .",
     "test": "vitest run",
@@ -44,7 +48,7 @@
       "extendInfo": {}
     }
   },
-  "author": "",
+  "author": "Oleh Rylskyj",
   "license": "MIT",
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.14",
