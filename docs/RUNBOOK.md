@@ -115,3 +115,21 @@ After a pause fires, wake the Mac and open the menu → it shows
   and NO images. Toggle it off in Settings → the file stops growing.
 - Tuning: after a night, inspect the log — if it false-alarms, raise `enterFrac` or `tAsleep`;
   if it misses, lower them. Threshold comes from calibration.
+
+## Native UI redesign
+
+- `npm start` (runs `prestart` → `build:css` first). If styles look unstyled, CSS didn't
+  build — run `npm run build:css`.
+- Windows should be **frosted/translucent** (vibrancy), not flat dark. The popover has rounded
+  corners and blurs what's behind it.
+- Panel: Monitoring is a **segmented control** (Auto · Off · Snooze); icon buttons for
+  Settings/Calibrate/Quit tint on hover.
+- Settings: **toggle switches** (launch-at-login, logging, night hours) and **± steppers**
+  for delays; Final action is a **segmented control**. Every change still persists (reopen to
+  confirm).
+- Colors follow your **macOS accent** (System Settings → Appearance → Accent). Change it,
+  relaunch Nyx, confirm the accent updates.
+- Icons are Lucide (bundled, offline).
+- Logo: generate a 1024² PNG (see the redesign spec prompt), save as
+  `src/resources/logo.png`, run `node scripts/make-icon.js`, then `npm run dist` to bake it
+  into the app icon.
