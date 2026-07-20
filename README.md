@@ -19,6 +19,21 @@ Mac to sleep if you don't answer.
 
 </div>
 
+<div align="center">
+  <img src="docs/screenshots/dashboard.png" alt="Nyx dashboard — watching over you" width="760" />
+</div>
+
+<table align="center">
+  <tr>
+    <td width="50%" valign="top"><img src="docs/screenshots/popover.png" alt="Menu-bar popover" /><br /><sub><b>Menu-bar popover</b> — the quick glance</sub></td>
+    <td width="50%" valign="top"><img src="docs/screenshots/onboarding.png" alt="Onboarding" /><br /><sub><b>Onboarding</b> — a privacy-first first run</sub></td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/screenshots/settings.png" alt="Settings" /><br /><sub><b>Settings</b> — grouped native controls + a live detection readout</sub></td>
+    <td valign="top"><img src="docs/screenshots/nudge.png" alt="Nudge overlay" /><br /><sub><b>Nudge overlay</b> — a gentle “still watching?” over your film</sub></td>
+  </tr>
+</table>
+
 ---
 
 ## Why
