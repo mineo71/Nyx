@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./styles/app.css" />
+    <script src="./accent-init.js"></script>
+  </head>
+  <body class="min-h-screen p-8 flex flex-col gap-6">
+    <div class="nyx-row">
+      <div class="flex items-center gap-2 text-lg font-semibold"><span class="nyx-icon icon-moon" style="color:var(--accent)"></span> Nyx</div>
+      <div class="flex items-center gap-2 text-sm nyx-muted"><span id="dot" class="nyx-dot"></span><span id="stateLabel">Idle</span></div>
+    </div>
+
+    <div class="nyx-card flex flex-col gap-4">
+      <div>
+        <h1 id="statusLine" class="text-[28px] font-medium">Idle</h1>
+        <p id="statusSub" class="text-sm mt-1 nyx-muted">Waiting for something to play</p>
+      </div>
+      <div class="nyx-row">
+        <span class="text-[13px] nyx-muted">Monitoring</span>
+        <div class="nyx-seg" id="mode" data-value="auto">
+          <button data-value="auto">Auto</button><button data-value="off">Off</button><button data-value="snooze">Snooze</button>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button id="calibrate" class="nyx-btn"><span class="nyx-icon icon-calibrate"></span>Calibrate</button>
+        <button id="settings" class="nyx-btn"><span class="nyx-icon icon-settings"></span>Settings</button>
+      </div>
+    </div>
+
+    <div class="nyx-card flex flex-col gap-2">
+      <div class="text-[12px] uppercase tracking-wide nyx-muted">Recent nights</div>
+      <ul id="recaps" class="flex flex-col gap-2 text-sm"></ul>
+    </div>
+
+    <script src="./main-window.js"></script>
+  </body>
+</html>
