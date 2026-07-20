@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./styles/app.css" />
+    <script src="./accent-init.js"></script>
+    <style>
+      html, body { height: 100vh; overflow: hidden; }
+      .wrap { display: flex; flex-direction: column; height: 100vh; }
+      .stage { position: relative; flex: 1; min-height: 0; background: #000; overflow: hidden; }
+      #cam, #ov { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+      #ov { pointer-events: none; }
+      .hud {
+        position: absolute; top: 12px; left: 12px; z-index: 2;
+        font: 500 11.5px/1.5 var(--mono); color: var(--text);
+        background: rgba(8,9,12,0.55); border: var(--hair); border-radius: 9px;
+        padding: 9px 11px; display: flex; flex-direction: column; gap: 2px;
+        backdrop-filter: blur(6px); min-width: 132px;
+      }
+      .foot { flex: none; display: flex; align-items: center; gap: 12px; padding: 11px 15px; border-top: var(--hair); }
+    </style>
+  </head>
+  <body class="nyx-body-window">
+    <div class="nyx-titlebar"></div>
+    <div class="wrap">
+      <div class="stage">
+        <video id="cam" autoplay playsinline muted></video>
+        <canvas id="ov"></canvas>
+        <div class="hud" id="hud">starting camera…</div>
+      </div>
+      <div class="foot">
+        <span class="text-[12px] nyx-faint">Local preview · nothing leaves your Mac</span>
+        <span class="flex-1"></span>
+        <span class="nyx-pill h-[30px] rounded-lg"><span id="dot" class="nyx-dot"></span><span id="stateLabel">—</span></span>
+      </div>
+    </div>
+    <script type="module" src="./devcam.js"></script>
+  </body>
+</html>

@@ -73,6 +73,20 @@ function createPanelWindow() {
   return panelWin;
 }
 
+let devCamWin = null;
+function showDevCam(threshold) {
+  if (devCamWin && !devCamWin.isDestroyed()) { devCamWin.focus(); return devCamWin; }
+  devCamWin = new BrowserWindow({
+    width: 560, height: 560, title: 'Nyx · Camera preview',
+    transparent: true, vibrancy: 'under-window', visualEffectState: 'active',
+    backgroundColor: '#00000000', titleBarStyle: 'hiddenInset',
+    webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
+  });
+  devCamWin.loadFile(path.join(__dirname, '..', 'renderer', 'devcam.html'), { query: { accent: accentHex, lang: langCode, threshold: String(threshold ?? 0.5) } });
+  devCamWin.on('closed', () => { devCamWin = null; });
+  return devCamWin;
+}
+
 let onboardingWin = null;
 function showOnboarding() {
   if (onboardingWin && !onboardingWin.isDestroyed()) { onboardingWin.focus(); return onboardingWin; }
@@ -123,4 +137,4 @@ function relocalize() {
   rl(onboardingWin, 'onboarding.html');
 }
 
-module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, closeCalibration, createPanelWindow, setAccent, showMainWindow, getMainWindow, markQuitting, setLang, relocalize, showOnboarding, closeOnboarding };
+module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, closeCalibration, createPanelWindow, setAccent, showMainWindow, getMainWindow, markQuitting, setLang, relocalize, showOnboarding, closeOnboarding, showDevCam };

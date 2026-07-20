@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld('nyx', {
   toggleWatch: () => ipcRenderer.send('nyx:toggle-watch'),
   openSettings: () => ipcRenderer.send('nyx:open-settings'),
   openCalibration: () => ipcRenderer.send('nyx:open-calibration'),
+  openDevCam: () => ipcRenderer.send('nyx:open-devcam'),
   quit: () => ipcRenderer.send('nyx:quit'),
   getRecaps: () => ipcRenderer.invoke('nyx:get-recaps'),
   dashboardReady: () => ipcRenderer.send('nyx:dashboard-ready'),

@@ -187,6 +187,7 @@ async function initSettings() {
   wireSteppers();
   document.getElementById('recalibrate').addEventListener('click', () => window.nyx.openCalibration());
   document.getElementById('revealLog').addEventListener('click', () => window.nyx.revealLog());
+  document.getElementById('openDevCam').addEventListener('click', () => window.nyx.openDevCam());
 }
 
 /* ---------- developer detection readout ---------- */

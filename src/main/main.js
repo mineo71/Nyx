@@ -17,7 +17,7 @@ const { urlForApp } = require('../services/applescript.js');
 const { IdleMonitor } = require('../services/idle-monitor.js');
 const { settings, addRecap, lastRecap, recentRecaps } = require('../services/stores.js');
 
-const { createDetectorWindow, showNudge, hideNudge, showCalibration, closeCalibration, createPanelWindow, setAccent, showMainWindow, getMainWindow, markQuitting, setLang, relocalize, showOnboarding, closeOnboarding } = require('./windows.js');
+const { createDetectorWindow, showNudge, hideNudge, showCalibration, closeCalibration, createPanelWindow, setAccent, showMainWindow, getMainWindow, markQuitting, setLang, relocalize, showOnboarding, closeOnboarding, showDevCam } = require('./windows.js');
 const { CaptureScheduler } = require('./capture-scheduler.js');
 const { NyxTray } = require('./tray.js');
 const { Popover } = require('./popover.js');
@@ -335,6 +335,7 @@ app.whenReady().then(() => {
   });
   ipcMain.on('nyx:open-settings', () => navigateMain('settings'));
   ipcMain.on('nyx:open-calibration', () => openCalibration());
+  ipcMain.on('nyx:open-devcam', () => showDevCam(currentThreshold()));
   ipcMain.on('nyx:calibration-done', () => { closeCalibration(); showMainWindow(); });
   ipcMain.on('nyx:quit', () => { stopArmed(); app.quit(); });
   ipcMain.on('nyx:reveal-log', () => shell.showItemInFolder(detectionLog.filePath));
