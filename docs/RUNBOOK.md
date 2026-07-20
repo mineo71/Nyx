@@ -1,6 +1,6 @@
 # Nyx Manual Test Runbook
 
-Automated unit tests cover the pure logic (`npm test` → 43 tests). This runbook is the
+Automated unit tests cover the pure logic (`npm test` → 87 tests). This runbook is the
 manual acceptance test for everything that needs real hardware, macOS permissions, and a
 human — the webcam, media detection, media-key press, and system sleep.
 
@@ -13,10 +13,9 @@ npm test                   # sanity: all unit tests green
 ```
 Assets already in the repo: `src/resources/trayTemplate.png` (+ `@2x`), `src/resources/chime.wav`.
 
-> **First run needs internet once.** The MediaPipe face model (`face_landmarker.task`,
-> ~3–4 MB) is fetched from Google's CDN the first time the detector starts, then cached.
-> Inference itself is always local. For a strictly-offline build, vendor the `.task` file
-> into `src/resources/` and point `modelAssetPath` in `src/renderer/detector.js` at it.
+> **Fully offline.** The MediaPipe face model (`face_landmarker.task`, ~3.6 MB) is vendored
+> at `src/resources/mediapipe/` and loaded from disk — no network at runtime. (`npm run
+> predist` re-fetches it if missing.) Inference is always local.
 
 ## 1. First launch & permissions
 1. `npm start`.

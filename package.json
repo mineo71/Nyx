@@ -16,7 +16,7 @@
     "copy-icons": "node scripts/copy-icons.js",
     "prestart": "npm run build:css",
     "predist": "npm run build:css && npm run build:mediakey && node scripts/make-icon.js && node scripts/fetch-model.js",
-    "dist": "electron-builder --mac"
+    "dist": "electron-builder --mac --publish never"
   },
   "build": {
     "appId": "com.oleh.nyx",
