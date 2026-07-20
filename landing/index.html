@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nyx — fall asleep watching? Nyx catches you.</title>
+    <meta name="description" content="A private macOS app that pauses your film and sleeps your Mac when you doze off watching." />
+    <style>
+      :root {
+        --bg: #0B0E14; --surface: #141824; --border: #232838;
+        --text: #F2F3F5; --muted: #868DA0; --accent: #7C8CF8;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        background: radial-gradient(1200px 600px at 50% -10%, #161B2B 0%, var(--bg) 55%);
+        color: var(--text); font: 16px/1.6 -apple-system, "SF Pro Text", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased; min-height: 100vh;
+      }
+      .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+      header { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; }
+      .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+      .brand svg { width: 28px; height: 28px; }
+      nav a { color: var(--muted); text-decoration: none; margin-left: 20px; font-size: 14px; }
+      nav a:hover { color: var(--text); }
+
+      .hero { text-align: center; padding: 72px 0 40px; }
+      .hero svg { width: 128px; height: 128px; filter: drop-shadow(0 12px 40px rgba(124,140,248,0.35)); }
+      .hero h1 { font-size: 48px; font-weight: 600; margin: 28px 0 12px; letter-spacing: -0.02em; }
+      .hero p { font-size: 20px; color: var(--muted); max-width: 620px; margin: 0 auto 32px; }
+      .cta { display: inline-flex; gap: 12px; }
+      .btn { display: inline-block; padding: 12px 22px; border-radius: 12px; text-decoration: none; font-weight: 500; font-size: 15px; }
+      .btn-primary { background: var(--accent); color: #0B0E14; }
+      .btn-primary:hover { filter: brightness(1.08); }
+      .btn-ghost { border: 1px solid var(--border); color: var(--text); }
+      .btn-ghost:hover { background: var(--surface); }
+
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 56px 0; }
+      .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+      .card h3 { font-size: 16px; margin-bottom: 8px; }
+      .card p { color: var(--muted); font-size: 14px; }
+      .card .ico { font-size: 22px; margin-bottom: 12px; }
+
+      section h2 { text-align: center; font-size: 28px; font-weight: 600; margin-top: 32px; }
+      .steps { max-width: 640px; margin: 28px auto 0; }
+      .step { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+      .step:last-child { border-bottom: 0; }
+      .step .n { color: var(--accent); font-variant-numeric: tabular-nums; font-weight: 600; width: 22px; }
+      .step .t { color: var(--muted); font-size: 15px; }
+      .step .t b { color: var(--text); font-weight: 600; }
+
+      .privacy { text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin: 56px 0; }
+      .privacy p { color: var(--muted); max-width: 620px; margin: 8px auto 0; }
+
+      footer { text-align: center; color: var(--muted); font-size: 13px; padding: 48px 0; }
+      footer a { color: var(--accent); text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+      <symbol id="moon" viewBox="0 0 240 240">
+        <defs>
+          <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9AA6FF"/><stop offset="1" stop-color="#7C8CF8"/></linearGradient>
+          <mask id="mc"><rect width="240" height="240" fill="black"/><circle cx="120" cy="120" r="70" fill="white"/><circle cx="150" cy="102" r="60" fill="black"/></mask>
+        </defs>
+        <rect width="240" height="240" fill="url(#mg)" mask="url(#mc)"/>
+      </symbol>
+    </svg>
+
+    <div class="wrap">
+      <header>
+        <div class="brand"><svg><use href="#moon"/></svg> Nyx</div>
+        <nav>
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <a href="https://github.com/">GitHub</a>
+        </nav>
+      </header>
+
+      <div class="hero">
+        <svg><use href="#moon"/></svg>
+        <h1>Fall asleep watching?<br/>Nyx catches you.</h1>
+        <p>A private macOS app that notices when you doze off in front of a film — nudges you,
+           pauses playback, remembers where you stopped, and sleeps your Mac if you don't answer.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/">Get Nyx</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+      </div>
+
+      <section id="features">
+        <div class="grid">
+          <div class="card"><div class="ico">🌙</div><h3>Knows when you sleep</h3><p>On-device eye-closure and head-nod tracking, smoothed so blinks don't fool it.</p></div>
+          <div class="card"><div class="ico">🎬</div><h3>Knows what you watched</h3><p>Arms on playback and remembers the title + time you nodded off, for a morning recap.</p></div>
+          <div class="card"><div class="ico">🪜</div><h3>Gentle escalation</h3><p>Quiet nudge → pause → louder nudge → sleep the Mac. Any movement cancels it.</p></div>
+          <div class="card"><div class="ico">🔒</div><h3>Private &amp; offline</h3><p>Frames analyzed in memory, never saved or uploaded. No cloud, no accounts.</p></div>
+          <div class="card"><div class="ico">🖥️</div><h3>A real Mac app</h3><p>Frosted menu-bar popover and a full dashboard, native controls, your accent color.</p></div>
+          <div class="card"><div class="ico">🌍</div><h3>English &amp; Українська</h3><p>Follows your system language, switchable any time.</p></div>
+        </div>
+      </section>
+
+      <section id="how">
+        <h2>How it works</h2>
+        <div class="steps">
+          <div class="step"><div class="n">1</div><div class="t">Play a film. Nyx <b>arms automatically</b> when video starts.</div></div>
+          <div class="step"><div class="n">2</div><div class="t">Its camera model watches your eyes — <b>on your Mac, never uploaded</b>.</div></div>
+          <div class="step"><div class="n">3</div><div class="t">Eyes closed too long → a <b>quiet nudge</b>, then playback <b>pauses</b>.</div></div>
+          <div class="step"><div class="n">4</div><div class="t">Still asleep → Nyx <b>sleeps your Mac</b>. Move or open your eyes to cancel.</div></div>
+          <div class="step"><div class="n">5</div><div class="t">In the morning, see <b>exactly where you dozed off</b>.</div></div>
+        </div>
+      </section>
+
+      <div class="privacy">
+        <h2>Your face never leaves your Mac</h2>
+        <p>Nyx analyzes the webcam in memory and discards every frame. It stores only your
+           calibration threshold, settings, and a short text recap — all local, all offline.</p>
+      </div>
+    </div>
+
+    <footer>
+      Open source under the MIT license · Named for Nyx, goddess of night ·
+      <a href="https://github.com/">GitHub</a>
+    </footer>
+  </body>
+</html>
