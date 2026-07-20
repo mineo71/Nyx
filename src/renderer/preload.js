@@ -20,6 +20,8 @@ contextBridge.exposeInMainWorld('nyx', {
   openSettings: () => ipcRenderer.send('nyx:open-settings'),
   openCalibration: () => ipcRenderer.send('nyx:open-calibration'),
   quit: () => ipcRenderer.send('nyx:quit'),
+  getRecaps: () => ipcRenderer.invoke('nyx:get-recaps'),
+  dashboardReady: () => ipcRenderer.send('nyx:dashboard-ready'),
   // Settings window
   getSettings: () => ipcRenderer.invoke('nyx:get-settings'),
   setSetting: (key, value) => ipcRenderer.invoke('nyx:set-setting', { key, value }),
