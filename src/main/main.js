@@ -15,7 +15,7 @@ const { clampSettingsView } = require('../core/settings-schema.js');
 
 const osActions = require('../services/os-actions.js');
 const { MediaWatcher } = require('../services/media-watcher.js');
-const { urlForApp } = require('../services/applescript.js');
+const { urlForApp, appPathForApp } = require('../services/applescript.js');
 const { IdleMonitor } = require('../services/idle-monitor.js');
 const { settings, addRecap, lastRecap, recentRecaps } = require('../services/stores.js');
 
@@ -82,6 +82,7 @@ function readSettingsView() {
     openAtLogin: app.getLoginItemSettings().openAtLogin,
     logDetection: settings.get('logDetection', DEFAULTS.logDetection),
     language: settings.get('language', 'auto'),
+    showDeveloper: settings.get('showDeveloper', false),
   });
 }
 
@@ -106,6 +107,7 @@ function applySettingsView(view) {
   settings.set('ladder', ladder);
   app.setLoginItemSettings({ openAtLogin: v.openAtLogin });
   settings.set('logDetection', v.logDetection);
+  settings.set('showDeveloper', v.showDeveloper);
   const prevLang = settings.get('language', 'auto');
   settings.set('language', v.language);
   if (v.language !== prevLang) {
@@ -186,7 +188,7 @@ function sendDetectorDebug(sample, cls) {
 }
 
 function pushPanelState() {
-  const nowPlaying = (mediaInfo && mediaWatcher) ? { title: mediaWatcher.currentTitle, app: mediaInfo.app || null, url: mediaInfo.url || null } : null;
+  const nowPlaying = (mediaInfo && mediaWatcher) ? { title: mediaWatcher.currentTitle, app: mediaInfo.app || null, url: mediaInfo.url || null, icon: mediaInfo.icon || null } : null;
   const state = { state: machine ? machine.state : 'IDLE', recap: lastRecap(), cameraOk, monitoringMode, nowPlaying, manualArm };
   for (const w of [panelWin, getMainWindow()]) {
     if (w && !w.isDestroyed()) w.webContents.send('nyx:panel-state', state);
@@ -239,6 +241,19 @@ async function checkForUpdates(manual = false) {
   } else if (manual) {
     notify('You’re up to date', `Nyx ${app.getVersion()} is the latest version.`);
   }
+}
+
+// Resolve the playing app's icon → data URL for the "Now watching" row (best-effort).
+async function resolveAppIcon(appName) {
+  try {
+    const p = await appPathForApp(appName);
+    if (!p) return;
+    const img = await app.getFileIcon(p, { size: 'normal' });
+    if (img && !img.isEmpty() && mediaInfo && mediaInfo.app === appName) {
+      mediaInfo.icon = img.toDataURL();
+      pushPanelState();
+    }
+  } catch { /* no icon — the row just shows text */ }
 }
 
 function permStatus() {
@@ -322,8 +337,11 @@ app.whenReady().then(() => {
     mediaInfo = info || {};
     if (monitoringAllowed()) machine.mediaPlaying();
     pushPanelState();
-    // fetch the tab URL in the background so arming isn't delayed
-    if (mediaInfo.app) urlForApp(mediaInfo.app).then((u) => { if (mediaInfo) { mediaInfo.url = u; pushPanelState(); } }).catch(() => {});
+    // fetch the tab URL + app icon in the background so arming isn't delayed
+    if (mediaInfo.app) {
+      urlForApp(mediaInfo.app).then((u) => { if (mediaInfo) { mediaInfo.url = u; pushPanelState(); } }).catch(() => {});
+      resolveAppIcon(mediaInfo.app);
+    }
   });
   mediaWatcher.on('media-stopped', () => { mediaInfo = null; if (!manualArm) machine.mediaStopped(); pushPanelState(); });
   mediaWatcher.start();

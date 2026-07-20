@@ -57,4 +57,11 @@ async function urlForApp(appName) {
   return null;
 }
 
-module.exports = { osa, browserTitle, quickTimeTitle, iinaOrVlcTitle, titleForApp, urlForApp };
+// POSIX path of an application bundle by name (sanitized; null if unknown/unsafe).
+async function appPathForApp(appName) {
+  const name = String(appName || '');
+  if (!/^[A-Za-z0-9 .()\-]+$/.test(name)) return null;
+  return osa(`POSIX path of (path to application "${name}")`);
+}
+
+module.exports = { osa, browserTitle, quickTimeTitle, iinaOrVlcTitle, titleForApp, urlForApp, appPathForApp };

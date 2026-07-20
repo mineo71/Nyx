@@ -20,7 +20,7 @@ Mac to sleep if you don't answer.
 </div>
 
 <div align="center">
-  <img src="docs/screenshots/dashboard.png" alt="Nyx dashboard — watching over you" width="760" />
+  <img src="docs/screenshots/demo.gif" alt="Nyx — a walkthrough of the dashboard, popover, nudge, settings and onboarding" width="760" />
 </div>
 
 <table align="center">

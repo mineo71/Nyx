@@ -12,6 +12,7 @@ const DEFAULT_VIEW = {
   openAtLogin: false,
   logDetection: true,
   language: 'auto',
+  showDeveloper: false,
 };
 
 function clampInt(value, min, max, fallback) {
@@ -34,6 +35,7 @@ function clampSettingsView(view = {}) {
     openAtLogin: Boolean(v.openAtLogin),
     logDetection: Boolean(v.logDetection),
     language: ['auto', 'en', 'uk'].includes(v.language) ? v.language : 'auto',
+    showDeveloper: Boolean(v.showDeveloper),
   };
 }
 

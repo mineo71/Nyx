@@ -5,7 +5,7 @@ describe('clampSettingsView', () => {
   it('passes through valid values unchanged', () => {
     const v = { tAsleepSec: 90, checkIntervalSec: 60, nudgeWaitSec: 30, pauseWaitSec: 45, finalAction: 'sleep',
       nightHoursEnabled: true, nightHoursStart: 21, nightHoursEnd: 7, openAtLogin: false,
-      logDetection: true, language: 'auto' };
+      logDetection: true, language: 'auto', showDeveloper: true };
     expect(clampSettingsView(v)).toEqual(v);
   });
 

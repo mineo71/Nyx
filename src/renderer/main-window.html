@@ -47,7 +47,8 @@
           <!-- now watching (only while playback is detected) -->
           <div id="npWrap" style="display:none">
             <div class="text-[13px] font-semibold nyx-muted mb-1.5" data-i18n="nowWatching">Now watching</div>
-            <div class="nyx-card flex items-center gap-3 px-4 py-3">
+            <div class="nyx-card flex items-center gap-3.5 px-4 py-3">
+              <img id="npIcon" width="34" height="34" alt="" style="border-radius:8px;display:none;flex:none" />
               <div class="flex-1 min-w-0">
                 <div id="npTitle" class="text-sm font-medium truncate">—</div>
                 <div id="npApp" class="text-[12px] nyx-faint mt-0.5"></div>
@@ -167,11 +168,15 @@
                   <button data-value="auto" data-i18n="lang.auto">Auto</button><button data-value="en">EN</button><button data-value="uk">UK</button>
                 </div>
               </div>
+              <div class="nyx-row px-4 py-3" style="border-top: var(--hair)">
+                <label class="text-[13.5px] font-medium" data-i18n="settings.devTools">Developer tools</label>
+                <label class="nyx-switch"><input id="showDeveloper" type="checkbox" /><span class="track"></span></label>
+              </div>
             </div>
           </section>
 
-          <!-- Developer · live detection readout -->
-          <section class="flex flex-col gap-2.5">
+          <!-- Developer · live detection readout (gated by the toggle above) -->
+          <section id="devSection" class="flex flex-col gap-2.5" style="display:none">
             <div class="flex items-center justify-between px-1">
               <h3 class="nyx-seclabel">Developer · live detection</h3>
               <button id="openDevCam" class="nyx-btn" style="padding:5px 12px">Camera preview</button>

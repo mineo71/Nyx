@@ -61,6 +61,8 @@ function renderNowPlaying(np) {
     const titleEl = document.getElementById('npTitle');
     titleEl.textContent = np.title;
     document.getElementById('npApp').textContent = np.app || '';
+    const icon = document.getElementById('npIcon');
+    if (np.icon) { icon.src = np.icon; icon.style.display = ''; } else { icon.style.display = 'none'; icon.removeAttribute('src'); }
     const url = np.url;
     titleEl.style.cursor = url ? 'pointer' : '';
     titleEl.style.color = url ? 'var(--accent)' : '';
@@ -148,7 +150,7 @@ window.nyx.onNavigate((_e, v) => showView(v));
 
 /* ---------- settings controls ---------- */
 const NUM_KEYS = ['tAsleepSec', 'checkIntervalSec', 'nudgeWaitSec', 'pauseWaitSec', 'nightHoursStart', 'nightHoursEnd'];
-const BOOL_KEYS = ['nightHoursEnabled', 'openAtLogin', 'logDetection'];
+const BOOL_KEYS = ['nightHoursEnabled', 'openAtLogin', 'logDetection', 'showDeveloper'];
 const finalActionSeg = document.getElementById('finalAction');
 const languageSeg = document.getElementById('language');
 
@@ -158,6 +160,7 @@ function fillSettings(view) {
   segSet(finalActionSeg, view.finalAction);
   segSet(languageSeg, view.language);
   document.getElementById('threshold').textContent = (view.eyeCloseThreshold ?? 0).toFixed(2);
+  document.getElementById('devSection').style.display = view.showDeveloper ? 'flex' : 'none';
 }
 
 async function saveSetting(key, value) {

@@ -75,6 +75,8 @@ function renderNowPlaying(np) {
     const titleEl = document.getElementById('npTitle');
     titleEl.textContent = np.title;
     document.getElementById('npApp').textContent = np.app || '';
+    const icon = document.getElementById('npIcon');
+    if (np.icon) { icon.src = np.icon; icon.style.display = ''; } else { icon.style.display = 'none'; icon.removeAttribute('src'); }
     const url = np.url;
     titleEl.style.cursor = url ? 'pointer' : '';
     titleEl.style.color = url ? 'var(--accent)' : '';

@@ -33,9 +33,12 @@
     <!-- now watching (only while playback is detected) -->
     <div id="npRow" class="px-4 py-3.5" style="border-top: var(--hair);display:none">
       <div class="nyx-seclabel mb-2.5" data-i18n="nowWatching">Now watching</div>
-      <div class="flex-1 min-w-0">
-        <div id="npTitle" class="text-[13px] font-medium truncate">—</div>
-        <div id="npApp" class="text-[11.5px] nyx-faint mt-0.5"></div>
+      <div class="flex items-center gap-3">
+        <img id="npIcon" width="30" height="30" alt="" style="border-radius:7px;display:none;flex:none" />
+        <div class="flex-1 min-w-0">
+          <div id="npTitle" class="text-[13px] font-medium truncate">—</div>
+          <div id="npApp" class="text-[11.5px] nyx-faint mt-0.5"></div>
+        </div>
       </div>
     </div>
 
