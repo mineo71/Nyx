@@ -1,4 +1,4 @@
-cask "nyx" do
+cask "nyx-timer" do
   version "0.2.0"
   sha256 "8644288ede9befea0b5d22351e833178221c74898c265e4d530780976bb3085b"
 

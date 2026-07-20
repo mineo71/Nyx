@@ -91,7 +91,7 @@ media-key helper.
 ```bash
 brew tap mineo71/nyx https://github.com/mineo71/Nyx
 brew trust mineo71/nyx   # Homebrew 6+ asks you to trust third-party taps
-brew install --cask nyx
+brew install --cask nyx-timer
 ```
 
 The cask strips the quarantine flag for you, so it launches straight away. `brew upgrade`
