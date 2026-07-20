@@ -2,45 +2,76 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="./styles/tokens.css" />
-    <style>
-      body { width: 460px; padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-5); }
-      section { display: flex; flex-direction: column; gap: var(--sp-3); }
-      h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-      .field { display: flex; align-items: center; justify-content: space-between; }
-      .field label { font-size: 13px; }
-      .inline { display: flex; align-items: center; gap: var(--sp-2); }
-    </style>
+    <link rel="stylesheet" href="./styles/app.css" />
+    <script src="./accent-init.js"></script>
   </head>
-  <body>
-    <section>
-      <h3>Detection</h3>
-      <div class="field"><label>Fall-asleep delay</label><div class="inline"><input id="tAsleepSec" type="number" min="5" max="3600" /><span class="muted">s</span></div></div>
-      <div class="field"><label>Eye-closed threshold</label><div class="inline"><span id="threshold" class="muted">—</span><button id="recalibrate">Recalibrate</button></div></div>
-    </section>
-    <section>
-      <h3>Escalation ladder</h3>
-      <div class="field"><label>Nudge wait</label><div class="inline"><input id="nudgeWaitSec" type="number" min="5" max="600" /><span class="muted">s</span></div></div>
-      <div class="field"><label>Pause wait</label><div class="inline"><input id="pauseWaitSec" type="number" min="5" max="600" /><span class="muted">s</span></div></div>
-      <div class="field"><label>Final action</label>
-        <select id="finalAction">
-          <option value="sleep">Sleep Mac</option>
-          <option value="displayOff">Display off</option>
-          <option value="pauseOnly">Pause only</option>
-        </select>
+  <body class="w-[460px] p-6 flex flex-col gap-5">
+    <section class="flex flex-col gap-3">
+      <h3 class="text-[12px] uppercase tracking-wide nyx-muted">Detection</h3>
+      <div class="nyx-card flex flex-col gap-3">
+        <div class="nyx-row"><label class="text-[13px]">Fall-asleep delay</label>
+          <div class="nyx-stepper" data-target="tAsleepSec" data-min="5" data-max="3600">
+            <button data-step="-5">−</button><input id="tAsleepSec" type="number" min="5" max="3600" /><button data-step="5">+</button><span class="nyx-muted text-xs ml-1">s</span>
+          </div>
+        </div>
+        <div class="nyx-row"><label class="text-[13px]">Eye-closed threshold</label>
+          <div class="flex items-center gap-2"><span id="threshold" class="nyx-muted text-[13px]">—</span><button id="recalibrate" class="nyx-btn">Recalibrate</button></div>
+        </div>
       </div>
     </section>
-    <section>
-      <h3>Night hours</h3>
-      <div class="field"><label><input id="nightHoursEnabled" type="checkbox" /> Only monitor at night</label>
-        <div class="inline"><span class="muted">from</span><input id="nightHoursStart" type="number" min="0" max="23" /><span class="muted">to</span><input id="nightHoursEnd" type="number" min="0" max="23" /></div>
+
+    <section class="flex flex-col gap-3">
+      <h3 class="text-[12px] uppercase tracking-wide nyx-muted">Escalation</h3>
+      <div class="nyx-card flex flex-col gap-3">
+        <div class="nyx-row"><label class="text-[13px]">Nudge wait</label>
+          <div class="nyx-stepper" data-target="nudgeWaitSec" data-min="5" data-max="600">
+            <button data-step="-5">−</button><input id="nudgeWaitSec" type="number" min="5" max="600" /><button data-step="5">+</button><span class="nyx-muted text-xs ml-1">s</span>
+          </div>
+        </div>
+        <div class="nyx-row"><label class="text-[13px]">Pause wait</label>
+          <div class="nyx-stepper" data-target="pauseWaitSec" data-min="5" data-max="600">
+            <button data-step="-5">−</button><input id="pauseWaitSec" type="number" min="5" max="600" /><button data-step="5">+</button><span class="nyx-muted text-xs ml-1">s</span>
+          </div>
+        </div>
+        <div class="nyx-row"><label class="text-[13px]">Final action</label>
+          <div class="nyx-seg" id="finalAction" data-value="sleep">
+            <button data-value="sleep">Sleep</button><button data-value="displayOff">Display</button><button data-value="pauseOnly">Pause</button>
+          </div>
+        </div>
       </div>
     </section>
-    <section>
-      <h3>General</h3>
-      <div class="field"><label><input id="openAtLogin" type="checkbox" /> Launch at login</label><span></span></div>
-      <div class="field"><label><input id="logDetection" type="checkbox" /> Log detection data (numbers only)</label><button id="revealLog">Reveal log</button></div>
+
+    <section class="flex flex-col gap-3">
+      <h3 class="text-[12px] uppercase tracking-wide nyx-muted">Night hours</h3>
+      <div class="nyx-card flex flex-col gap-3">
+        <div class="nyx-row">
+          <label class="text-[13px]">Only monitor at night</label>
+          <label class="nyx-switch"><input id="nightHoursEnabled" type="checkbox" /><span class="track"></span></label>
+        </div>
+        <div class="nyx-row"><span class="nyx-muted text-[13px]">Window</span>
+          <div class="flex items-center gap-2 nyx-muted text-xs">
+            from <div class="nyx-stepper" data-target="nightHoursStart" data-min="0" data-max="23"><button data-step="-1">−</button><input id="nightHoursStart" type="number" min="0" max="23" /><button data-step="1">+</button></div>
+            to <div class="nyx-stepper" data-target="nightHoursEnd" data-min="0" data-max="23"><button data-step="-1">−</button><input id="nightHoursEnd" type="number" min="0" max="23" /><button data-step="1">+</button></div>
+          </div>
+        </div>
+      </div>
     </section>
+
+    <section class="flex flex-col gap-3">
+      <h3 class="text-[12px] uppercase tracking-wide nyx-muted">General</h3>
+      <div class="nyx-card flex flex-col gap-3">
+        <div class="nyx-row"><label class="text-[13px]">Launch at login</label>
+          <label class="nyx-switch"><input id="openAtLogin" type="checkbox" /><span class="track"></span></label>
+        </div>
+        <div class="nyx-row"><label class="text-[13px]">Log detection data <span class="nyx-muted">(numbers only)</span></label>
+          <div class="flex items-center gap-2">
+            <button id="revealLog" class="nyx-btn">Reveal log</button>
+            <label class="nyx-switch"><input id="logDetection" type="checkbox" /><span class="track"></span></label>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <script src="./settings.js"></script>
   </body>
 </html>
