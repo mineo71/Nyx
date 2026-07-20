@@ -1,6 +1,7 @@
 const NUM_KEYS = ['tAsleepSec', 'nudgeWaitSec', 'pauseWaitSec', 'nightHoursStart', 'nightHoursEnd'];
 const BOOL_KEYS = ['nightHoursEnabled', 'openAtLogin', 'logDetection'];
 const finalActionSeg = document.getElementById('finalAction');
+const languageSeg = document.getElementById('language');
 
 function segSet(el, value) {
   el.dataset.value = value;
@@ -11,6 +12,7 @@ function fill(view) {
   NUM_KEYS.forEach((k) => { document.getElementById(k).value = view[k]; });
   BOOL_KEYS.forEach((k) => { document.getElementById(k).checked = view[k]; });
   segSet(finalActionSeg, view.finalAction);
+  segSet(languageSeg, view.language);
   document.getElementById('threshold').textContent = (view.eyeCloseThreshold ?? 0).toFixed(2);
 }
 
@@ -37,6 +39,7 @@ async function init() {
   NUM_KEYS.forEach((k) => document.getElementById(k).addEventListener('change', (e) => save(k, Number(e.target.value))));
   BOOL_KEYS.forEach((k) => document.getElementById(k).addEventListener('change', (e) => save(k, e.target.checked)));
   finalActionSeg.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => save('finalAction', b.dataset.value)));
+  languageSeg.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => save('language', b.dataset.value)));
   wireSteppers();
   document.getElementById('recalibrate').addEventListener('click', () => window.nyx.openCalibration());
   document.getElementById('revealLog').addEventListener('click', () => window.nyx.revealLog());

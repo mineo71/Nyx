@@ -10,6 +10,7 @@ const DEFAULT_VIEW = {
   nightHoursEnd: 7,
   openAtLogin: false,
   logDetection: true,
+  language: 'auto',
 };
 
 function clampInt(value, min, max, fallback) {
@@ -30,6 +31,7 @@ function clampSettingsView(view = {}) {
     nightHoursEnd: clampInt(v.nightHoursEnd, 0, 23, DEFAULT_VIEW.nightHoursEnd),
     openAtLogin: Boolean(v.openAtLogin),
     logDetection: Boolean(v.logDetection),
+    language: ['auto', 'en', 'uk'].includes(v.language) ? v.language : 'auto',
   };
 }
 

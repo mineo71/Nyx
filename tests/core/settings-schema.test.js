@@ -5,7 +5,7 @@ describe('clampSettingsView', () => {
   it('passes through valid values unchanged', () => {
     const v = { tAsleepSec: 90, nudgeWaitSec: 30, pauseWaitSec: 45, finalAction: 'sleep',
       nightHoursEnabled: true, nightHoursStart: 21, nightHoursEnd: 7, openAtLogin: false,
-      logDetection: true };
+      logDetection: true, language: 'auto' };
     expect(clampSettingsView(v)).toEqual(v);
   });
 
@@ -38,5 +38,11 @@ describe('clampSettingsView', () => {
     expect(clampSettingsView({}).logDetection).toBe(true);
     expect(clampSettingsView({ logDetection: 0 }).logDetection).toBe(false);
     expect(clampSettingsView({ logDetection: 1 }).logDetection).toBe(true);
+  });
+
+  it('clamps language to auto/en/uk', () => {
+    expect(clampSettingsView({}).language).toBe('auto');
+    expect(clampSettingsView({ language: 'uk' }).language).toBe('uk');
+    expect(clampSettingsView({ language: 'zz' }).language).toBe('auto');
   });
 });

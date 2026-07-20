@@ -6,6 +6,9 @@ const PRELOAD = path.join(__dirname, '..', 'renderer', 'preload.js');
 let accentHex = '7C8CF8';
 function setAccent(hex) { if (hex) accentHex = hex; }
 
+let langCode = 'en';
+function setLang(l) { if (l) langCode = l; }
+
 let appQuitting = false;
 function markQuitting() { appQuitting = true; }
 
@@ -30,7 +33,7 @@ function showNudge(level, waitMs) {
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
   nudgeWin.setIgnoreMouseEvents(true);
-  nudgeWin.loadFile(path.join(__dirname, '..', 'renderer', 'nudge.html'));
+  nudgeWin.loadFile(path.join(__dirname, '..', 'renderer', 'nudge.html'), { query: { accent: accentHex, lang: langCode } });
   nudgeWin.webContents.once('did-finish-load', () => nudgeWin.webContents.send('nyx:nudge', { level, waitMs }));
   nudgeWin.on('closed', () => { nudgeWin = null; });
   return nudgeWin;
@@ -49,21 +52,22 @@ function showCalibration() {
     backgroundColor: '#00000000', titleBarStyle: 'hiddenInset',
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
-  calibrationWin.loadFile(path.join(__dirname, '..', 'renderer', 'calibration.html'), { query: { accent: accentHex } });
+  calibrationWin.loadFile(path.join(__dirname, '..', 'renderer', 'calibration.html'), { query: { accent: accentHex, lang: langCode } });
   calibrationWin.on('closed', () => { calibrationWin = null; });
   return calibrationWin;
 }
 
+let panelWin = null;
 function createPanelWindow() {
-  const win = new BrowserWindow({
+  panelWin = new BrowserWindow({
     width: 300, height: 380,
     show: false, frame: false, resizable: false, movable: false,
     transparent: true, vibrancy: 'popover', visualEffectState: 'active', roundedCorners: true,
     backgroundColor: '#00000000', alwaysOnTop: true, skipTaskbar: true, fullscreenable: false,
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
-  win.loadFile(path.join(__dirname, '..', 'renderer', 'panel.html'), { query: { accent: accentHex } });
-  return win;
+  panelWin.loadFile(path.join(__dirname, '..', 'renderer', 'panel.html'), { query: { accent: accentHex, lang: langCode } });
+  return panelWin;
 }
 
 let settingsWin = null;
@@ -75,7 +79,7 @@ function showSettings() {
     backgroundColor: '#00000000', titleBarStyle: 'hiddenInset',
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
-  settingsWin.loadFile(path.join(__dirname, '..', 'renderer', 'settings.html'), { query: { accent: accentHex } });
+  settingsWin.loadFile(path.join(__dirname, '..', 'renderer', 'settings.html'), { query: { accent: accentHex, lang: langCode } });
   settingsWin.on('closed', () => { settingsWin = null; });
   return settingsWin;
 }
@@ -89,10 +93,19 @@ function showMainWindow() {
     backgroundColor: '#00000000', titleBarStyle: 'hiddenInset', title: 'Nyx',
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
-  mainWin.loadFile(path.join(__dirname, '..', 'renderer', 'main-window.html'), { query: { accent: accentHex } });
+  mainWin.loadFile(path.join(__dirname, '..', 'renderer', 'main-window.html'), { query: { accent: accentHex, lang: langCode } });
   mainWin.on('close', (e) => { if (!appQuitting) { e.preventDefault(); mainWin.hide(); } });
   return mainWin;
 }
 function getMainWindow() { return (mainWin && !mainWin.isDestroyed()) ? mainWin : null; }
 
-module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent, showMainWindow, getMainWindow, markQuitting };
+function relocalize() {
+  const q = { query: { accent: accentHex, lang: langCode } };
+  const rl = (w, file) => { if (w && !w.isDestroyed()) w.loadFile(path.join(__dirname, '..', 'renderer', file), q); };
+  rl(panelWin, 'panel.html');
+  rl(settingsWin, 'settings.html');
+  rl(calibrationWin, 'calibration.html');
+  rl(mainWin, 'main-window.html');
+}
+
+module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent, showMainWindow, getMainWindow, markQuitting, setLang, relocalize };
