@@ -86,12 +86,24 @@ media-key helper.
 
 ## Download & install
 
-**[⬇︎ Download the latest `.dmg` from Releases](https://github.com/mineo71/Nyx/releases/latest)**
-(Apple Silicon).
+### Homebrew (recommended)
 
-The build is **unsigned**, so on first launch: **right-click `Nyx.app` → Open** (or
-System Settings → Privacy & Security → *Open Anyway*). Then grant **Camera** and
-**Accessibility** when asked — Accessibility lets Nyx press the media Play/Pause key.
+```bash
+brew tap mineo71/nyx https://github.com/mineo71/Nyx
+brew install --cask nyx
+```
+
+The cask strips the quarantine flag for you, so it launches straight away. `brew upgrade`
+pulls new versions.
+
+### Or download the DMG
+
+**[⬇︎ Download the latest `.dmg` from Releases](https://github.com/mineo71/Nyx/releases/latest)**
+(Apple Silicon). The build is **unsigned**, so on first launch: **right-click `Nyx.app` → Open**
+(or System Settings → Privacy & Security → *Open Anyway*).
+
+Then grant **Camera** and **Accessibility** when asked — Accessibility lets Nyx press the
+media Play/Pause key.
 
 ### First run
 

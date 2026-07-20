@@ -18,7 +18,7 @@ async function initModel() {
       outputFaceBlendshapes: true,
       outputFacialTransformationMatrixes: true,
       runningMode: 'IMAGE',
-      numFaces: 1,
+      numFaces: 3, // detect several, then track only the owner (closest/largest face)
     });
   } catch (e) {
     window.nyx.sendDetectorError(String(e && e.message ? e.message : e));
@@ -66,10 +66,14 @@ function stopCamera() {
   video.srcObject = null;
 }
 
+const pickFace = (window.NyxFaceSelect && window.NyxFaceSelect.largestFaceIndex) || (() => 0);
+
 function captureSample() {
   if (!landmarker || !stream || video.readyState < 2) return null;
   const result = landmarker.detect(video);
-  const shapes = result.faceBlendshapes && result.faceBlendshapes[0];
+  const idx = pickFace(result.faceLandmarks); // the owner: closest/largest face
+  if (idx < 0) return null;
+  const shapes = result.faceBlendshapes && result.faceBlendshapes[idx];
   if (!shapes) return null;
   const find = (name) => {
     const c = shapes.categories.find((x) => x.categoryName === name);
@@ -78,7 +82,7 @@ function captureSample() {
   const left = find('eyeBlinkLeft');
   const right = find('eyeBlinkRight');
   if (left == null || right == null) return null;
-  const mtx = result.facialTransformationMatrixes && result.facialTransformationMatrixes[0];
+  const mtx = result.facialTransformationMatrixes && result.facialTransformationMatrixes[idx];
   const matrix = mtx && mtx.data ? Array.from(mtx.data) : null;
   return { left, right, matrix };
 }

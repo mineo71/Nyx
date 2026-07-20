@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question / discussion
+    url: https://github.com/mineo71/Nyx/discussions
+    about: Ask a question or share how you use Nyx.
