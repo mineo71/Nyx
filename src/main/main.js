@@ -97,9 +97,12 @@ function applySettingsView(view) {
   settings.set('ladder', ladder);
   app.setLoginItemSettings({ openAtLogin: v.openAtLogin });
   settings.set('logDetection', v.logDetection);
+  const prevLang = settings.get('language', 'auto');
   settings.set('language', v.language);
-  setLang(resolveLocale(v.language, app.getLocale()));
-  relocalize();
+  if (v.language !== prevLang) {
+    setLang(resolveLocale(v.language, app.getLocale()));
+    relocalize();
+  }
   refreshRuntimeConfig();
 }
 

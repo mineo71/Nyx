@@ -1,3 +1,5 @@
+const t = window.t || ((k) => k);
+
 const instruction = document.getElementById('instruction');
 const status = document.getElementById('status');
 const scoreEl = document.getElementById('score');
@@ -25,10 +27,10 @@ renderDots();
 
 navigator.mediaDevices.getUserMedia({ video: true, audio: false })
   .then((stream) => { preview.srcObject = stream; })
-  .catch(() => { status.textContent = 'Camera preview unavailable'; });
+  .catch(() => { status.textContent = t('calib.previewUnavailable'); });
 
 window.nyx.onCalibrateScore((_e, sample) => {
-  scoreEl.textContent = sample ? ((sample.left + sample.right) / 2).toFixed(2) : 'no face';
+  scoreEl.textContent = sample ? ((sample.left + sample.right) / 2).toFixed(2) : t('calib.noFace');
 });
 
 captureBtn.addEventListener('click', () => {
@@ -37,17 +39,17 @@ captureBtn.addEventListener('click', () => {
   count += 1;
   play(tick);
   renderDots();
-  status.textContent = `${phase}: ${count}/${NEEDED} captured`;
+  status.textContent = `${phase}: ${count}/${NEEDED} ${t('calib.captured')}`;
   if (count >= NEEDED) {
     if (phase === 'open') {
       phase = 'closed'; count = 0; renderDots();
-      instruction.innerHTML = 'Step 2 — <b>close your eyes</b> and click Capture ~10 times.';
+      instruction.innerHTML = t('calib.step2');
       status.textContent = '';
     } else {
       done = true;
       captureBtn.disabled = true;
-      captureBtn.textContent = 'Complete ✓';
-      instruction.textContent = 'Calibration complete. You can close this window.';
+      captureBtn.textContent = t('calib.complete');
+      instruction.textContent = t('calib.doneMsg');
       play(chime);
     }
   }

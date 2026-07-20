@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="./styles/app.css" />
     <script src="./accent-init.js"></script>
+    <script src="./i18n/strings.js"></script>
+    <script src="./i18n/i18n.js"></script>
   </head>
   <body class="min-h-screen p-8 flex flex-col gap-6">
     <div class="nyx-row">
@@ -17,19 +19,19 @@
         <p id="statusSub" class="text-sm mt-1 nyx-muted">Waiting for something to play</p>
       </div>
       <div class="nyx-row">
-        <span class="text-[13px] nyx-muted">Monitoring</span>
+        <span class="text-[13px] nyx-muted" data-i18n="monitoring">Monitoring</span>
         <div class="nyx-seg" id="mode" data-value="auto">
-          <button data-value="auto">Auto</button><button data-value="off">Off</button><button data-value="snooze">Snooze</button>
+          <button data-value="auto" data-i18n="mode.auto">Auto</button><button data-value="off" data-i18n="mode.off">Off</button><button data-value="snooze" data-i18n="mode.snooze">Snooze</button>
         </div>
       </div>
       <div class="flex gap-2">
-        <button id="calibrate" class="nyx-btn"><span class="nyx-icon icon-calibrate"></span>Calibrate</button>
-        <button id="settings" class="nyx-btn"><span class="nyx-icon icon-settings"></span>Settings</button>
+        <button id="calibrate" class="nyx-btn"><span class="nyx-icon icon-calibrate"></span><span data-i18n="btn.calibrate">Calibrate</span></button>
+        <button id="settings" class="nyx-btn"><span class="nyx-icon icon-settings"></span><span data-i18n="btn.settings">Settings</span></button>
       </div>
     </div>
 
     <div class="nyx-card flex flex-col gap-2">
-      <div class="text-[12px] uppercase tracking-wide nyx-muted">Recent nights</div>
+      <div class="text-[12px] uppercase tracking-wide nyx-muted" data-i18n="main.recentNights">Recent nights</div>
       <ul id="recaps" class="flex flex-col gap-2 text-sm"></ul>
     </div>
 
