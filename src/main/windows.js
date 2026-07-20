@@ -3,6 +3,9 @@ const path = require('node:path');
 
 const PRELOAD = path.join(__dirname, '..', 'renderer', 'preload.js');
 
+let accentHex = '7C8CF8';
+function setAccent(hex) { if (hex) accentHex = hex; }
+
 function createDetectorWindow() {
   const win = new BrowserWindow({
     show: false,
@@ -38,22 +41,25 @@ let calibrationWin = null;
 function showCalibration() {
   if (calibrationWin) { calibrationWin.focus(); return calibrationWin; }
   calibrationWin = new BrowserWindow({
-    width: 480, height: 320,
+    width: 480, height: 560, resizable: false, title: 'Calibrate Nyx',
+    transparent: true, vibrancy: 'under-window', visualEffectState: 'active',
+    backgroundColor: '#00000000', titleBarStyle: 'hiddenInset',
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
-  calibrationWin.loadFile(path.join(__dirname, '..', 'renderer', 'calibration.html'));
+  calibrationWin.loadFile(path.join(__dirname, '..', 'renderer', 'calibration.html'), { query: { accent: accentHex } });
   calibrationWin.on('closed', () => { calibrationWin = null; });
   return calibrationWin;
 }
 
 function createPanelWindow() {
   const win = new BrowserWindow({
-    width: 300, height: 360,
+    width: 300, height: 380,
     show: false, frame: false, resizable: false, movable: false,
-    transparent: false, alwaysOnTop: true, skipTaskbar: true, fullscreenable: false,
+    transparent: true, vibrancy: 'popover', visualEffectState: 'active', roundedCorners: true,
+    backgroundColor: '#00000000', alwaysOnTop: true, skipTaskbar: true, fullscreenable: false,
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
-  win.loadFile(path.join(__dirname, '..', 'renderer', 'panel.html'));
+  win.loadFile(path.join(__dirname, '..', 'renderer', 'panel.html'), { query: { accent: accentHex } });
   return win;
 }
 
@@ -61,12 +67,14 @@ let settingsWin = null;
 function showSettings() {
   if (settingsWin) { settingsWin.focus(); return settingsWin; }
   settingsWin = new BrowserWindow({
-    width: 460, height: 560, resizable: false, title: 'Nyx Settings',
+    width: 460, height: 600, resizable: false, title: 'Nyx Settings',
+    transparent: true, vibrancy: 'under-window', visualEffectState: 'active',
+    backgroundColor: '#00000000', titleBarStyle: 'hiddenInset',
     webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
   });
-  settingsWin.loadFile(path.join(__dirname, '..', 'renderer', 'settings.html'));
+  settingsWin.loadFile(path.join(__dirname, '..', 'renderer', 'settings.html'), { query: { accent: accentHex } });
   settingsWin.on('closed', () => { settingsWin = null; });
   return settingsWin;
 }
 
-module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings };
+module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent };
