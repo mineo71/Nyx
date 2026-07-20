@@ -142,3 +142,10 @@ After a pause fires, wake the Mac and open the menu → it shows
   or QuickTime/IINA/VLC → panel flips to Watching within ~5s.
 - Calibration caps at 10 captures per phase (extra clicks ignored), plays a tick per capture
   and a chime on completion, then shows "Complete ✓".
+
+## P2 full-size app
+
+- `npm start` opens a **main dashboard window** (dock icon present) alongside the menu-bar popover.
+- Dashboard: live state, Monitoring control, Calibrate/Settings, and a Recent-nights list.
+- Closing the window keeps Nyx running in the menu bar; click the dock icon to reopen.
+- Quit from the popover ⏻ fully exits.
