@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root { --accent: #7C8CF8; }
+  html, body {
+    margin: 0; background: transparent; color: #F2F3F5;
+    font-family: -apple-system, "SF Pro Text", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased; user-select: none; cursor: default;
+  }
+  h1, h2, h3, p { margin: 0; }
+}
+
+@layer components {
+  .nyx-card { @apply rounded-xl p-3; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); }
+  .nyx-row { @apply flex items-center justify-between; }
+  .nyx-muted { color: rgba(242,243,245,0.55); }
+
+  .nyx-btn { @apply rounded-lg px-3 py-2 text-[13px] flex items-center justify-center gap-2 transition-colors;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); color: #F2F3F5; }
+  .nyx-btn:hover { background: rgba(255,255,255,0.12); }
+  .nyx-btn-primary { background: var(--accent); color: #0B0E14; border-color: transparent; }
+  .nyx-btn-primary:hover { filter: brightness(1.08); }
+
+  .nyx-switch { position: relative; width: 38px; height: 22px; display: inline-block; flex: none; }
+  .nyx-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .nyx-switch .track { position: absolute; inset: 0; border-radius: 999px; background: rgba(255,255,255,0.15); transition: background .15s ease; pointer-events: none; }
+  .nyx-switch .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 999px; background: #fff; transition: transform .15s ease; box-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  .nyx-switch input:checked + .track { background: var(--accent); }
+  .nyx-switch input:checked + .track::after { transform: translateX(16px); }
+
+  .nyx-seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); }
+  .nyx-seg button { border: 0; background: transparent; color: #F2F3F5; font-size: 12px; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+  .nyx-seg button.active { background: rgba(255,255,255,0.14); box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+
+  .nyx-stepper { display: inline-flex; align-items: center; gap: 4px; }
+  .nyx-stepper input { width: 52px; text-align: center; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); border-radius: 6px; padding: 3px 6px; color: #F2F3F5; font-size: 13px; }
+  .nyx-stepper button { width: 22px; height: 22px; border-radius: 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.10); color: #F2F3F5; cursor: pointer; line-height: 1; }
+  .nyx-stepper button:hover { background: rgba(255,255,255,0.14); }
+
+  .nyx-icon { display: inline-block; width: 16px; height: 16px; background: currentColor;
+    -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; -webkit-mask-size: contain; }
+  .icon-moon { -webkit-mask-image: url('../icons/moon.svg'); }
+  .icon-settings { -webkit-mask-image: url('../icons/sliders-horizontal.svg'); }
+  .icon-calibrate { -webkit-mask-image: url('../icons/scan-face.svg'); }
+  .icon-power { -webkit-mask-image: url('../icons/power.svg'); }
+  .icon-camera { -webkit-mask-image: url('../icons/camera.svg'); }
+
+  .nyx-dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; }
+}

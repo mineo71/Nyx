@@ -4,6 +4,25 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
+const fsChk = require('fs');
+const pathChk = require('path');
+const { execFileSync: execChk } = require('child_process');
+const logoPath = pathChk.join(__dirname, '..', 'src', 'resources', 'logo.png');
+const resDir = pathChk.join(__dirname, '..', 'src', 'resources');
+if (fsChk.existsSync(logoPath)) {
+  const set = pathChk.join(resDir, 'icon.iconset');
+  fsChk.mkdirSync(set, { recursive: true });
+  const specs = [[16,'16x16'],[32,'16x16@2x'],[32,'32x32'],[64,'32x32@2x'],[128,'128x128'],[256,'128x128@2x'],[256,'256x256'],[512,'256x256@2x'],[512,'512x512'],[1024,'512x512@2x']];
+  for (const [sz, name] of specs) {
+    execChk('sips', ['-z', String(sz), String(sz), logoPath, '--out', pathChk.join(set, `icon_${name}.png`)], { stdio: 'ignore' });
+  }
+  execChk('iconutil', ['-c', 'icns', '-o', pathChk.join(resDir, 'icon.icns'), set]);
+  fsChk.rmSync(set, { recursive: true, force: true });
+  console.log('wrote src/resources/icon.icns from logo.png');
+  process.exit(0);
+}
+// ---- else: existing generated-crescent logic runs below ----
+
 function crc32(buf){let c=~0;for(let i=0;i<buf.length;i++){c^=buf[i];for(let k=0;k<8;k++)c=(c>>>1)^(0xEDB88320&-(c&1));}return ~c>>>0;}
 function chunk(type,data){const t=Buffer.from(type,'ascii');const len=Buffer.alloc(4);len.writeUInt32BE(data.length);const crc=Buffer.alloc(4);crc.writeUInt32BE(crc32(Buffer.concat([t,data])));return Buffer.concat([len,t,data,crc]);}
 function makePNG(size){

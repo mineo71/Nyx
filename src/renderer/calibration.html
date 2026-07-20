@@ -2,27 +2,22 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="./styles/tokens.css" />
+    <link rel="stylesheet" href="./styles/app.css" />
+    <script src="./accent-init.js"></script>
     <style>
-      body { width: 480px; padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-4); align-items: center; }
-      h2 { font-size: 20px; font-weight: 500; align-self: flex-start; }
-      video { width: 240px; height: 180px; border-radius: var(--radius); background: #000; border: 1px solid var(--border); transform: scaleX(-1); object-fit: cover; }
-      #instruction { text-align: center; font-size: 15px; }
-      .readout { font-size: 13px; color: var(--muted); }
-      .dots { display: flex; gap: var(--sp-1); }
-      .dots .d { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
-      .dots .d.on { background: var(--accent); }
-      #status { color: var(--muted); font-size: 13px; }
+      video { width: 260px; height: 195px; border-radius: 12px; background: #000; border: 1px solid rgba(255,255,255,0.12); transform: scaleX(-1); object-fit: cover; }
+      #dots .d { width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.18); }
+      #dots .d.on { background: var(--accent); }
     </style>
   </head>
-  <body>
-    <h2>Calibrate Nyx</h2>
+  <body class="w-[480px] p-6 flex flex-col items-center gap-4">
+    <h2 class="text-[20px] font-medium self-start">Calibrate Nyx</h2>
     <video id="preview" autoplay playsinline muted></video>
-    <p id="instruction">Step 1 — look at the camera with your eyes <b>open</b>, then click Capture ~10 times.</p>
-    <div class="readout">Blink score: <span id="score">—</span></div>
-    <div class="dots" id="dots"></div>
-    <button id="capture" class="primary">Capture</button>
-    <div id="status"></div>
+    <p id="instruction" class="text-center text-[15px]">Step 1 — look at the camera with your eyes <b>open</b>, then click Capture ~10 times.</p>
+    <div class="text-[13px] nyx-muted">Blink score: <span id="score">—</span></div>
+    <div class="flex gap-1" id="dots"></div>
+    <button id="capture" class="nyx-btn nyx-btn-primary px-6">Capture</button>
+    <div id="status" class="nyx-muted text-[13px]"></div>
     <script src="./calibration.js"></script>
   </body>
 </html>

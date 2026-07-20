@@ -8,14 +8,19 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build:mediakey": "bash src/native/media-key/build.sh",
-    "predist": "npm run build:mediakey && node scripts/make-icon.js && node scripts/fetch-model.js",
+    "build:css": "tailwindcss -i src/renderer/styles/tailwind.css -o src/renderer/styles/app.css --minify",
+    "copy-icons": "node scripts/copy-icons.js",
+    "prestart": "npm run build:css",
+    "predist": "npm run build:css && npm run build:mediakey && node scripts/make-icon.js && node scripts/fetch-model.js",
     "dist": "electron-builder --mac"
   },
   "build": {
     "appId": "com.oleh.nyx",
     "productName": "Nyx",
     "asar": false,
-    "directories": { "output": "dist" },
+    "directories": {
+      "output": "dist"
+    },
     "files": [
       "src/**/*",
       "!src/**/*.test.js",
@@ -23,14 +28,22 @@
       "!tests/**"
     ],
     "extraResources": [
-      { "from": "src/resources", "to": "resources" }
+      {
+        "from": "src/resources",
+        "to": "resources"
+      }
     ],
     "mac": {
       "category": "public.app-category.utilities",
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "icon": "src/resources/icon.icns",
       "identity": null,
-      "extendInfo": { "LSUIElement": true }
+      "extendInfo": {
+        "LSUIElement": true
+      }
     }
   },
   "author": "",
@@ -42,6 +55,8 @@
   "devDependencies": {
     "electron": "^31.0.0",
     "electron-builder": "^24.13.3",
+    "lucide-static": "^0.400.0",
+    "tailwindcss": "^3.4.19",
     "vitest": "^2.0.0"
   }
 }

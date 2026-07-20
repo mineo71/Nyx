@@ -1,4 +1,4 @@
-const { app, ipcMain, powerMonitor, session, shell } = require('electron');
+const { app, ipcMain, powerMonitor, session, shell, systemPreferences } = require('electron');
 const path = require('node:path');
 
 const { DEFAULTS } = require('../core/config.js');
@@ -7,6 +7,7 @@ const { EscalationEngine } = require('../core/escalation-engine.js');
 const { computeThreshold } = require('../core/detector-logic.js');
 const { DrowsinessDetector } = require('../core/drowsiness-detector.js');
 const { pitchFromMatrix } = require('../core/head-pose.js');
+const { normalizeAccent } = require('../core/accent.js');
 const { DetectionLog } = require('../services/detection-log.js');
 const { clampSettingsView } = require('../core/settings-schema.js');
 
@@ -15,7 +16,7 @@ const { MediaWatcher } = require('../services/media-watcher.js');
 const { IdleMonitor } = require('../services/idle-monitor.js');
 const { settings, addRecap, lastRecap } = require('../services/stores.js');
 
-const { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings } = require('./windows.js');
+const { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent } = require('./windows.js');
 const { CaptureScheduler } = require('./capture-scheduler.js');
 const { NyxTray } = require('./tray.js');
 const { Popover } = require('./popover.js');
@@ -142,6 +143,11 @@ function pushPanelState() {
 }
 
 app.whenReady().then(() => {
+  try {
+    const raw = systemPreferences.getAccentColor ? systemPreferences.getAccentColor() : '';
+    setAccent(normalizeAccent(raw));
+  } catch { /* keep default accent */ }
+
   session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) => cb(permission === 'media'));
   session.defaultSession.setPermissionCheckHandler((_wc, permission) => permission === 'media');
 
