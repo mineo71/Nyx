@@ -1,5 +1,6 @@
-const { app, ipcMain, powerMonitor, session, shell, systemPreferences, nativeImage } = require('electron');
+const { app, ipcMain, powerMonitor, session, shell, systemPreferences, nativeImage, Notification } = require('electron');
 const path = require('node:path');
+const https = require('node:https');
 
 const { DEFAULTS } = require('../core/config.js');
 const { SleepStateMachine } = require('../core/state-machine.js');
@@ -8,6 +9,7 @@ const { computeThreshold } = require('../core/detector-logic.js');
 const { DrowsinessDetector } = require('../core/drowsiness-detector.js');
 const { pitchFromMatrix } = require('../core/head-pose.js');
 const { resolveLocale } = require('../core/i18n.js');
+const { isNewer, pickRelease } = require('../core/update-check.js');
 const { DetectionLog } = require('../services/detection-log.js');
 const { clampSettingsView } = require('../core/settings-schema.js');
 
@@ -199,6 +201,46 @@ function navigateMain(view) {
   else send();
 }
 
+// ---- Update notifier (unsigned build → notify + download, no silent install) ----
+const UPDATE_REPO = 'mineo71/Nyx';
+let latestUpdate = null;
+
+function fetchLatestRelease() {
+  return new Promise((resolve) => {
+    const req = https.get(
+      `https://api.github.com/repos/${UPDATE_REPO}/releases/latest`,
+      { headers: { 'User-Agent': 'Nyx-Updater', Accept: 'application/vnd.github+json' } },
+      (res) => {
+        if (res.statusCode !== 200) { res.resume(); return resolve(null); }
+        let data = '';
+        res.on('data', (c) => { data += c; });
+        res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
+      },
+    );
+    req.on('error', () => resolve(null));
+    req.setTimeout(8000, () => { req.destroy(); resolve(null); });
+  });
+}
+
+function notify(title, body, onClick) {
+  if (!Notification.isSupported()) return;
+  const n = new Notification({ title, body, silent: true });
+  if (onClick) n.on('click', onClick);
+  n.show();
+}
+
+async function checkForUpdates(manual = false) {
+  const rel = pickRelease(await fetchLatestRelease());
+  if (!rel) { if (manual) notify('Couldn’t check for updates', 'Please try again later.'); return; }
+  if (isNewer(rel.version, app.getVersion())) {
+    latestUpdate = rel;
+    if (tray) tray.setUpdate(rel);
+    notify(`Nyx ${rel.version} is available`, 'Click to download the update.', () => shell.openExternal(rel.dmgUrl || rel.url));
+  } else if (manual) {
+    notify('You’re up to date', `Nyx ${app.getVersion()} is the latest version.`);
+  }
+}
+
 function permStatus() {
   let camera = 'unknown';
   let accessibility = false;
@@ -259,8 +301,14 @@ app.whenReady().then(() => {
       calibrate: () => openCalibration(),
       settings: () => navigateMain('settings'),
       quit: () => { stopArmed(); app.quit(); },
+      checkUpdates: () => checkForUpdates(true),
+      openUpdate: (rel) => shell.openExternal((rel && (rel.dmgUrl || rel.url)) || `https://github.com/${UPDATE_REPO}/releases/latest`),
     },
   });
+
+  // Update check: a few seconds after launch, then every 6 hours.
+  setTimeout(() => checkForUpdates(false), 4000);
+  setInterval(() => checkForUpdates(false), 6 * 60 * 60 * 1000);
   popover = new Popover({ window: panelWin, tray: tray.tray });
 
   scheduler = new CaptureScheduler({
