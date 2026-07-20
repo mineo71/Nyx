@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="./styles/app.css" />
     <script src="./accent-init.js"></script>
+    <script src="./i18n/strings.js"></script>
+    <script src="./i18n/i18n.js"></script>
   </head>
   <body class="w-[300px] h-[380px] p-4 flex flex-col gap-4">
     <div class="nyx-row">
@@ -17,23 +19,23 @@
     </div>
 
     <div class="nyx-card">
-      <div class="text-[11px] uppercase tracking-wide nyx-muted">Last night</div>
+      <div class="text-[11px] uppercase tracking-wide nyx-muted" data-i18n="panel.lastNight">Last night</div>
       <div id="recapTitle" class="text-sm mt-1">No sleep events yet</div>
       <div id="recapTime" class="text-xs nyx-muted"></div>
     </div>
 
     <div class="nyx-row">
-      <span class="text-[13px] nyx-muted">Monitoring</span>
+      <span class="text-[13px] nyx-muted" data-i18n="monitoring">Monitoring</span>
       <div class="nyx-seg" id="mode" data-value="auto">
-        <button data-value="auto">Auto</button>
-        <button data-value="off">Off</button>
-        <button data-value="snooze">Snooze</button>
+        <button data-value="auto" data-i18n="mode.auto">Auto</button>
+        <button data-value="off" data-i18n="mode.off">Off</button>
+        <button data-value="snooze" data-i18n="mode.snooze">Snooze</button>
       </div>
     </div>
 
     <div class="mt-auto flex gap-2">
-      <button id="settings" class="nyx-btn flex-1"><span class="nyx-icon icon-settings"></span>Settings</button>
-      <button id="calibrate" class="nyx-btn flex-1"><span class="nyx-icon icon-calibrate"></span>Calibrate</button>
+      <button id="settings" class="nyx-btn flex-1"><span class="nyx-icon icon-settings"></span><span data-i18n="btn.settings">Settings</span></button>
+      <button id="calibrate" class="nyx-btn flex-1"><span class="nyx-icon icon-calibrate"></span><span data-i18n="btn.calibrate">Calibrate</span></button>
       <button id="quit" class="nyx-btn w-10" title="Quit Nyx"><span class="nyx-icon icon-power"></span></button>
     </div>
 

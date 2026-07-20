@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="./styles/app.css" />
     <script src="./accent-init.js"></script>
+    <script src="./i18n/strings.js"></script>
+    <script src="./i18n/i18n.js"></script>
     <style>
       html, body { height: 100%; background: transparent; overflow: hidden; }
       .backdrop { position: fixed; inset: 0; background: rgba(7,9,14,0.5); backdrop-filter: blur(24px) saturate(160%); display: flex; align-items: center; justify-content: center; }
@@ -22,8 +24,8 @@
     <div class="backdrop">
       <div class="wrap">
         <span class="nyx-icon icon-moon moon"></span>
-        <h1>Still watching?</h1>
-        <p>Move, or open your eyes — Nyx thinks you dozed off.</p>
+        <h1 data-i18n="nudge.title">Still watching?</h1>
+        <p data-i18n="nudge.sub">Move, or open your eyes — Nyx thinks you dozed off.</p>
         <svg class="ring" width="72" height="72" viewBox="0 0 72 72" style="display:none">
           <circle class="track" cx="36" cy="36" r="32"></circle>
           <circle class="prog" cx="36" cy="36" r="32"></circle>

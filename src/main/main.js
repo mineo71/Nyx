@@ -8,6 +8,7 @@ const { computeThreshold } = require('../core/detector-logic.js');
 const { DrowsinessDetector } = require('../core/drowsiness-detector.js');
 const { pitchFromMatrix } = require('../core/head-pose.js');
 const { normalizeAccent } = require('../core/accent.js');
+const { resolveLocale } = require('../core/i18n.js');
 const { DetectionLog } = require('../services/detection-log.js');
 const { clampSettingsView } = require('../core/settings-schema.js');
 
@@ -16,7 +17,7 @@ const { MediaWatcher } = require('../services/media-watcher.js');
 const { IdleMonitor } = require('../services/idle-monitor.js');
 const { settings, addRecap, lastRecap, recentRecaps } = require('../services/stores.js');
 
-const { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent, showMainWindow, getMainWindow, markQuitting } = require('./windows.js');
+const { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent, showMainWindow, getMainWindow, markQuitting, setLang, relocalize } = require('./windows.js');
 const { CaptureScheduler } = require('./capture-scheduler.js');
 const { NyxTray } = require('./tray.js');
 const { Popover } = require('./popover.js');
@@ -74,6 +75,7 @@ function readSettingsView() {
     nightHoursEnd: nh.end,
     openAtLogin: app.getLoginItemSettings().openAtLogin,
     logDetection: settings.get('logDetection', DEFAULTS.logDetection),
+    language: settings.get('language', 'auto'),
   });
 }
 
@@ -95,6 +97,12 @@ function applySettingsView(view) {
   settings.set('ladder', ladder);
   app.setLoginItemSettings({ openAtLogin: v.openAtLogin });
   settings.set('logDetection', v.logDetection);
+  const prevLang = settings.get('language', 'auto');
+  settings.set('language', v.language);
+  if (v.language !== prevLang) {
+    setLang(resolveLocale(v.language, app.getLocale()));
+    relocalize();
+  }
   refreshRuntimeConfig();
 }
 
@@ -144,6 +152,8 @@ app.whenReady().then(() => {
     const raw = systemPreferences.getAccentColor ? systemPreferences.getAccentColor() : '';
     setAccent(normalizeAccent(raw));
   } catch { /* keep default accent */ }
+
+  setLang(resolveLocale(settings.get('language', 'auto'), app.getLocale()));
 
   session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) => cb(permission === 'media'));
   session.defaultSession.setPermissionCheckHandler((_wc, permission) => permission === 'media');

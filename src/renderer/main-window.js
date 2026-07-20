@@ -1,3 +1,5 @@
+const t = window.t || ((k) => k);
+
 const dot = document.getElementById('dot');
 const stateLabel = document.getElementById('stateLabel');
 const statusLine = document.getElementById('statusLine');
@@ -5,12 +7,15 @@ const statusSub = document.getElementById('statusSub');
 const modeSeg = document.getElementById('mode');
 const recapsEl = document.getElementById('recaps');
 
-const STATE_COPY = {
-  IDLE:       { label: 'Idle',      line: 'Idle',              sub: 'Waiting for something to play', dot: 'rgba(242,243,245,0.35)' },
-  WATCHING:   { label: 'Watching',  line: 'Watching over you', sub: 'Armed by playback',             dot: 'var(--accent)' },
-  DROWSY:     { label: 'Watching',  line: 'Checking on you…',  sub: 'Your eyes look closed',         dot: 'var(--accent)' },
-  ESCALATING: { label: 'Nudging',   line: 'Still watching?',   sub: 'Nudging you awake',             dot: '#E0A45C' },
-};
+function copyFor(state) {
+  const map = {
+    IDLE:       { label: t('state.idle.label'), line: t('state.idle.line'), sub: t('state.idle.sub'), dot: 'rgba(242,243,245,0.35)' },
+    WATCHING:   { label: t('state.watching.label'), line: t('state.watching.line'), sub: t('state.watching.sub'), dot: 'var(--accent)' },
+    DROWSY:     { label: t('state.drowsy.label'), line: t('state.drowsy.line'), sub: t('state.drowsy.sub'), dot: 'var(--accent)' },
+    ESCALATING: { label: t('state.escalating.label'), line: t('state.escalating.line'), sub: t('state.escalating.sub'), dot: '#E0A45C' },
+  };
+  return map[state] || map.IDLE;
+}
 
 function segSet(el, value) {
   el.dataset.value = value;
@@ -18,11 +23,11 @@ function segSet(el, value) {
 }
 
 function renderState(s) {
-  const c = STATE_COPY[s.state] || STATE_COPY.IDLE;
+  const c = copyFor(s.state);
   dot.style.background = c.dot;
   stateLabel.textContent = c.label;
   statusLine.textContent = c.line;
-  statusSub.textContent = s.cameraOk === false ? 'Camera unavailable — auto-sleep off' : c.sub;
+  statusSub.textContent = s.cameraOk === false ? t('state.cameraOff') : c.sub;
   statusSub.style.color = s.cameraOk === false ? '#E0A45C' : 'rgba(242,243,245,0.55)';
   if (s.monitoringMode) segSet(modeSeg, s.monitoringMode);
 }
@@ -33,7 +38,7 @@ async function renderRecaps() {
   if (!list.length) {
     const li = document.createElement('li');
     li.className = 'nyx-muted';
-    li.textContent = 'No sleep events yet';
+    li.textContent = t('panel.noEvents');
     recapsEl.appendChild(li);
     return;
   }
