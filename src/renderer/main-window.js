@@ -58,8 +58,14 @@ function renderNowPlaying(np) {
   if (!npWrap) return;
   if (np && np.title) {
     npWrap.style.display = 'block';
-    document.getElementById('npTitle').textContent = np.title;
+    const titleEl = document.getElementById('npTitle');
+    titleEl.textContent = np.title;
     document.getElementById('npApp').textContent = np.app || '';
+    const url = np.url;
+    titleEl.style.cursor = url ? 'pointer' : '';
+    titleEl.style.color = url ? 'var(--accent)' : '';
+    titleEl.title = url || '';
+    titleEl.onclick = url ? () => window.nyx.openExternal(url) : null;
   } else {
     npWrap.style.display = 'none';
   }
@@ -91,13 +97,20 @@ async function renderRecaps() {
     const when = new Date(r.timestamp);
     const row = el('div', 'flex items-center gap-3.5 py-2.5');
     row.style.borderTop = 'var(--hair)';
+    if (r.url) {
+      row.style.cursor = 'pointer';
+      row.title = r.url;
+      row.addEventListener('click', () => window.nyx.openExternal(r.url));
+    }
 
     const thumb = el('div', 'nyx-thumb');
     thumb.style.cssText = 'width:52px;height:34px';
 
     const mid = el('div', 'flex-1 min-w-0');
+    const titleEl = el('div', 'text-sm font-medium truncate', r.title);
+    if (r.url) titleEl.style.color = 'var(--accent)';
     mid.append(
-      el('div', 'text-sm font-medium truncate', r.title),
+      titleEl,
       el('div', 'text-[12px] nyx-faint mt-0.5', when.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })),
     );
 

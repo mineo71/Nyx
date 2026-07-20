@@ -39,4 +39,22 @@ async function titleForApp(appName) {
   return null;
 }
 
-module.exports = { osa, browserTitle, quickTimeTitle, iinaOrVlcTitle, titleForApp };
+// Whitelisted Chromium-family apps → their exact AppleScript application name.
+// (Whitelist, not interpolation, so a process name can't inject into the script.)
+const CHROMIUM_APPS = [
+  ['arc', 'Arc'], ['google chrome', 'Google Chrome'], ['chromium', 'Chromium'],
+  ['brave', 'Brave Browser'], ['microsoft edge', 'Microsoft Edge'], ['edge', 'Microsoft Edge'],
+  ['vivaldi', 'Vivaldi'], ['opera', 'Opera'],
+];
+
+// Active-tab URL for a browser (null for native players / unknown apps).
+async function urlForApp(appName) {
+  const name = (appName || '').toLowerCase();
+  if (name.includes('safari')) return osa('tell application "Safari" to return URL of front document');
+  for (const [key, appExact] of CHROMIUM_APPS) {
+    if (name.includes(key)) return osa(`tell application "${appExact}" to return URL of active tab of front window`);
+  }
+  return null;
+}
+
+module.exports = { osa, browserTitle, quickTimeTitle, iinaOrVlcTitle, titleForApp, urlForApp };

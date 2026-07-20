@@ -43,9 +43,15 @@ function render(s) {
   if (s.recap) {
     recapTitle.textContent = `${t('panel.paused')} "${s.recap.title}"`;
     recapTime.textContent = `${t('panel.at')} ${new Date(s.recap.timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+    const url = s.recap.url;
+    recapTitle.style.cursor = url ? 'pointer' : '';
+    recapTitle.style.color = url ? 'var(--accent)' : '';
+    recapTitle.title = url || '';
+    recapTitle.onclick = url ? () => window.nyx.openExternal(url) : null;
   } else {
     recapTitle.textContent = t('panel.noEvents');
     recapTime.textContent = '';
+    recapTitle.style.cursor = ''; recapTitle.style.color = ''; recapTitle.onclick = null;
   }
   if (s.monitoringMode) segSet(modeSeg, s.monitoringMode);
   renderNowPlaying(s.nowPlaying);
@@ -66,8 +72,14 @@ function renderNowPlaying(np) {
   if (!npRow) return;
   if (np && np.title) {
     npRow.style.display = 'block';
-    document.getElementById('npTitle').textContent = np.title;
+    const titleEl = document.getElementById('npTitle');
+    titleEl.textContent = np.title;
     document.getElementById('npApp').textContent = np.app || '';
+    const url = np.url;
+    titleEl.style.cursor = url ? 'pointer' : '';
+    titleEl.style.color = url ? 'var(--accent)' : '';
+    titleEl.title = url || '';
+    titleEl.onclick = url ? () => window.nyx.openExternal(url) : null;
   } else {
     npRow.style.display = 'none';
   }

@@ -32,6 +32,7 @@ contextBridge.exposeInMainWorld('nyx', {
   getSettings: () => ipcRenderer.invoke('nyx:get-settings'),
   setSetting: (key, value) => ipcRenderer.invoke('nyx:set-setting', { key, value }),
   revealLog: () => ipcRenderer.send('nyx:reveal-log'),
+  openExternal: (url) => ipcRenderer.send('nyx:open-url', url),
   // Onboarding window
   onboardingReady: () => ipcRenderer.send('nyx:onboarding-ready'),
   getPermissions: () => ipcRenderer.invoke('nyx:onboarding-permissions'),

@@ -1,4 +1,4 @@
-const { app, ipcMain, powerMonitor, session, shell, systemPreferences } = require('electron');
+const { app, ipcMain, powerMonitor, session, shell, systemPreferences, nativeImage } = require('electron');
 const path = require('node:path');
 
 const { DEFAULTS } = require('../core/config.js');
@@ -13,6 +13,7 @@ const { clampSettingsView } = require('../core/settings-schema.js');
 
 const osActions = require('../services/os-actions.js');
 const { MediaWatcher } = require('../services/media-watcher.js');
+const { urlForApp } = require('../services/applescript.js');
 const { IdleMonitor } = require('../services/idle-monitor.js');
 const { settings, addRecap, lastRecap, recentRecaps } = require('../services/stores.js');
 
@@ -129,9 +130,11 @@ function buildEngine() {
   const ladder = settings.get('ladder', DEFAULTS.ladder);
   const actions = {
     nudge: (level, waitMs) => { showNudge(level, waitMs ?? ladder[0]?.waitMs ?? 30000); },
-    pause: () => {
+    pause: async () => {
       osActions.pressMediaPlayPause();
-      addRecap({ title: mediaWatcher.currentTitle, app: null, timestamp: Date.now() });
+      const app = mediaInfo && mediaInfo.app;
+      const url = app ? await urlForApp(app) : null;
+      addRecap({ title: mediaWatcher.currentTitle, app: app || null, url, timestamp: Date.now() });
       pushPanelState();
     },
     sleep: () => { hideNudge(); osActions.sleepNow(); },
@@ -181,7 +184,7 @@ function sendDetectorDebug(sample, cls) {
 }
 
 function pushPanelState() {
-  const nowPlaying = (mediaInfo && mediaWatcher) ? { title: mediaWatcher.currentTitle, app: mediaInfo.app || null } : null;
+  const nowPlaying = (mediaInfo && mediaWatcher) ? { title: mediaWatcher.currentTitle, app: mediaInfo.app || null, url: mediaInfo.url || null } : null;
   const state = { state: machine ? machine.state : 'IDLE', recap: lastRecap(), cameraOk, monitoringMode, nowPlaying, manualArm };
   for (const w of [panelWin, getMainWindow()]) {
     if (w && !w.isDestroyed()) w.webContents.send('nyx:panel-state', state);
@@ -206,6 +209,15 @@ function permStatus() {
 
 app.whenReady().then(() => {
   setAccent('ada8ff'); // locked moonlight-lavender (Nyx design language)
+
+  // Dock icon: packaged builds use icon.icns automatically; set it at runtime so
+  // `npm start` (electron .) shows the crescent instead of the default Electron icon.
+  if (app.dock) {
+    try {
+      const img = nativeImage.createFromPath(path.join(__dirname, '..', 'resources', 'icon.icns'));
+      if (!img.isEmpty()) app.dock.setIcon(img);
+    } catch { /* keep default */ }
+  }
 
   setLang(resolveLocale(settings.get('language', 'auto'), app.getLocale()));
 
@@ -258,7 +270,13 @@ app.whenReady().then(() => {
   });
 
   mediaWatcher = new MediaWatcher({ pollMs: 2000 });
-  mediaWatcher.on('media-playing', (info) => { mediaInfo = info || {}; if (monitoringAllowed()) machine.mediaPlaying(); pushPanelState(); });
+  mediaWatcher.on('media-playing', (info) => {
+    mediaInfo = info || {};
+    if (monitoringAllowed()) machine.mediaPlaying();
+    pushPanelState();
+    // fetch the tab URL in the background so arming isn't delayed
+    if (mediaInfo.app) urlForApp(mediaInfo.app).then((u) => { if (mediaInfo) { mediaInfo.url = u; pushPanelState(); } }).catch(() => {});
+  });
   mediaWatcher.on('media-stopped', () => { mediaInfo = null; if (!manualArm) machine.mediaStopped(); pushPanelState(); });
   mediaWatcher.start();
 
@@ -320,6 +338,7 @@ app.whenReady().then(() => {
   ipcMain.on('nyx:calibration-done', () => { closeCalibration(); showMainWindow(); });
   ipcMain.on('nyx:quit', () => { stopArmed(); app.quit(); });
   ipcMain.on('nyx:reveal-log', () => shell.showItemInFolder(detectionLog.filePath));
+  ipcMain.on('nyx:open-url', (_e, url) => { if (typeof url === 'string' && /^https?:\/\//i.test(url)) shell.openExternal(url); });
 
   // Onboarding (first-run)
   ipcMain.on('nyx:onboarding-ready', (e) => e.sender.send('nyx:onboarding-permissions', permStatus()));
