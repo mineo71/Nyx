@@ -4,3 +4,6 @@ dist/
 src/resources/mediakey
 src/resources/mediapipe/face_landmarker.task
 src/renderer/styles/app.css
+
+# Playwright MCP scratch
+.playwright-mcp/
