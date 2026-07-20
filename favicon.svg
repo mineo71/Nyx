@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b2030"/>
+      <stop offset="1" stop-color="#0b0e14"/>
+    </linearGradient>
+    <linearGradient id="moon" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e6e3ff"/>
+      <stop offset="1" stop-color="#ada8ff"/>
+    </linearGradient>
+    <mask id="crescent">
+      <rect width="100" height="100" fill="#000"/>
+      <circle cx="47" cy="53" r="27" fill="#fff"/>
+      <circle cx="60" cy="42" r="23" fill="#000"/>
+    </mask>
+  </defs>
+  <rect x="3" y="3" width="94" height="94" rx="22" fill="url(#bg)"/>
+  <rect width="100" height="100" fill="url(#moon)" mask="url(#crescent)"/>
+</svg>
