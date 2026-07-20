@@ -133,3 +133,12 @@ After a pause fires, wake the Mac and open the menu → it shows
 - Logo: generate a 1024² PNG (see the redesign spec prompt), save as
   `src/resources/logo.png`, run `node scripts/make-icon.js`, then `npm run dist` to bake it
   into the app icon.
+
+## P1 fixes
+
+- Playback detection now works for **browser video** — Nyx watches for any app holding a
+  display-wake assertion (`NoDisplaySleepAssertion` "Video Wake Lock" or
+  `PreventUserIdleDisplaySleep`), excluding system daemons. Play a video in Arc/Chrome/Safari
+  or QuickTime/IINA/VLC → panel flips to Watching within ~5s.
+- Calibration caps at 10 captures per phase (extra clicks ignored), plays a tick per capture
+  and a chime on completion, then shows "Complete ✓".
