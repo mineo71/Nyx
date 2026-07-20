@@ -41,9 +41,7 @@
       ],
       "icon": "src/resources/icon.icns",
       "identity": null,
-      "extendInfo": {
-        "LSUIElement": true
-      }
+      "extendInfo": {}
     }
   },
   "author": "",

@@ -17,4 +17,8 @@ function lastRecap() {
   return recapStore.get('entries')[0] || null;
 }
 
-module.exports = { settings, addRecap, lastRecap };
+function recentRecaps(limit = 10) {
+  return recapStore.get('entries').slice(0, limit);
+}
+
+module.exports = { settings, addRecap, lastRecap, recentRecaps };

@@ -14,15 +14,15 @@ const { clampSettingsView } = require('../core/settings-schema.js');
 const osActions = require('../services/os-actions.js');
 const { MediaWatcher } = require('../services/media-watcher.js');
 const { IdleMonitor } = require('../services/idle-monitor.js');
-const { settings, addRecap, lastRecap } = require('../services/stores.js');
+const { settings, addRecap, lastRecap, recentRecaps } = require('../services/stores.js');
 
-const { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent } = require('./windows.js');
+const { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent, showMainWindow, getMainWindow, markQuitting } = require('./windows.js');
 const { CaptureScheduler } = require('./capture-scheduler.js');
 const { NyxTray } = require('./tray.js');
 const { Popover } = require('./popover.js');
 
 app.setName('Nyx');
-if (app.dock) app.dock.hide();
+if (app.dock) app.dock.show();
 
 let machine, engine, tray, popover, panelWin, detectorWin, scheduler, mediaWatcher, idleMonitor, tickTimer;
 let drowsiness, detectionLog;
@@ -133,13 +133,10 @@ function startArmed() { if (drowsiness) drowsiness.reset(); osActions.startCaffe
 function stopArmed() { osActions.stopCaffeinate(); scheduler.stop(); hideNudge(); pushPanelState(); tray.refresh(); }
 
 function pushPanelState() {
-  if (!panelWin || panelWin.isDestroyed()) return;
-  panelWin.webContents.send('nyx:panel-state', {
-    state: machine ? machine.state : 'IDLE',
-    recap: lastRecap(),
-    cameraOk,
-    monitoringMode,
-  });
+  const state = { state: machine ? machine.state : 'IDLE', recap: lastRecap(), cameraOk, monitoringMode };
+  for (const w of [panelWin, getMainWindow()]) {
+    if (w && !w.isDestroyed()) w.webContents.send('nyx:panel-state', state);
+  }
 }
 
 app.whenReady().then(() => {
@@ -158,6 +155,7 @@ app.whenReady().then(() => {
   });
   detectionLog = new DetectionLog({ filePath: path.join(app.getPath('userData'), 'detection-log.jsonl') });
   panelWin = createPanelWindow();
+  showMainWindow();
 
   machine = new SleepStateMachine({
     config: {
@@ -226,6 +224,8 @@ app.whenReady().then(() => {
   });
 
   ipcMain.on('nyx:panel-ready', () => pushPanelState());
+  ipcMain.handle('nyx:get-recaps', () => recentRecaps(10));
+  ipcMain.on('nyx:dashboard-ready', () => pushPanelState());
   ipcMain.on('nyx:set-monitoring', (_e, mode) => setMonitoringMode(mode));
   ipcMain.on('nyx:open-settings', () => showSettings());
   ipcMain.on('nyx:open-calibration', () => openCalibration());
@@ -256,3 +256,5 @@ function forwardCalibrationScore(sample) {
 }
 
 app.on('window-all-closed', (e) => e.preventDefault());
+app.on('activate', () => showMainWindow());
+app.on('before-quit', () => markQuitting());

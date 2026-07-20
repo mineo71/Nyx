@@ -6,6 +6,9 @@ const PRELOAD = path.join(__dirname, '..', 'renderer', 'preload.js');
 let accentHex = '7C8CF8';
 function setAccent(hex) { if (hex) accentHex = hex; }
 
+let appQuitting = false;
+function markQuitting() { appQuitting = true; }
+
 function createDetectorWindow() {
   const win = new BrowserWindow({
     show: false,
@@ -77,4 +80,19 @@ function showSettings() {
   return settingsWin;
 }
 
-module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent };
+let mainWin = null;
+function showMainWindow() {
+  if (mainWin && !mainWin.isDestroyed()) { mainWin.show(); mainWin.focus(); return mainWin; }
+  mainWin = new BrowserWindow({
+    width: 760, height: 560, minWidth: 620, minHeight: 460,
+    transparent: true, vibrancy: 'under-window', visualEffectState: 'active',
+    backgroundColor: '#00000000', titleBarStyle: 'hiddenInset', title: 'Nyx',
+    webPreferences: { preload: PRELOAD, contextIsolation: true, nodeIntegration: false },
+  });
+  mainWin.loadFile(path.join(__dirname, '..', 'renderer', 'main-window.html'), { query: { accent: accentHex } });
+  mainWin.on('close', (e) => { if (!appQuitting) { e.preventDefault(); mainWin.hide(); } });
+  return mainWin;
+}
+function getMainWindow() { return (mainWin && !mainWin.isDestroyed()) ? mainWin : null; }
+
+module.exports = { createDetectorWindow, showNudge, hideNudge, showCalibration, createPanelWindow, showSettings, setAccent, showMainWindow, getMainWindow, markQuitting };
