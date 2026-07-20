@@ -3,9 +3,15 @@ const status = document.getElementById('status');
 const scoreEl = document.getElementById('score');
 const dotsEl = document.getElementById('dots');
 const preview = document.getElementById('preview');
+const captureBtn = document.getElementById('capture');
 let phase = 'open';
 let count = 0;
+let done = false;
 const NEEDED = 10;
+
+const tick = new Audio('../resources/tick.wav');
+const chime = new Audio('../resources/chime.wav');
+function play(a) { try { a.currentTime = 0; a.play().catch(() => {}); } catch { /* ignore */ } }
 
 function renderDots() {
   dotsEl.innerHTML = '';
@@ -25,9 +31,11 @@ window.nyx.onCalibrateScore((_e, sample) => {
   scoreEl.textContent = sample ? ((sample.left + sample.right) / 2).toFixed(2) : 'no face';
 });
 
-document.getElementById('capture').addEventListener('click', () => {
+captureBtn.addEventListener('click', () => {
+  if (done || count >= NEEDED) return;
   window.nyx.requestCalibrationSample(phase);
   count += 1;
+  play(tick);
   renderDots();
   status.textContent = `${phase}: ${count}/${NEEDED} captured`;
   if (count >= NEEDED) {
@@ -36,7 +44,11 @@ document.getElementById('capture').addEventListener('click', () => {
       instruction.innerHTML = 'Step 2 — <b>close your eyes</b> and click Capture ~10 times.';
       status.textContent = '';
     } else {
+      done = true;
+      captureBtn.disabled = true;
+      captureBtn.textContent = 'Complete ✓';
       instruction.textContent = 'Calibration complete. You can close this window.';
+      play(chime);
     }
   }
 });

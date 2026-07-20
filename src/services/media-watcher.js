@@ -2,8 +2,10 @@ const { EventEmitter } = require('node:events');
 const { run } = require('./run-cmd.js');
 const { titleForApp } = require('./applescript.js');
 
-// Apps we treat as media. Their assertion presence => something is playing.
-const MEDIA_HINTS = ['arc', 'chrome', 'safari', 'quicktime', 'iina', 'vlc', 'tv', 'music', 'netflix'];
+// Assertion types that mean "something is actively keeping the display awake" (i.e. playing).
+const WAKE_ASSERTIONS = /(PreventUserIdleDisplaySleep|NoDisplaySleepAssertion)/;
+// System daemons that hold sleep assertions but are NOT media.
+const SYSTEM_OWNERS = ['powerd', 'coreaudiod', 'caffeinate', 'windowserver', 'loginwindow', 'controlcenter', 'sharingd', 'nyx', 'electron'];
 
 async function readAssertions() {
   try {
@@ -14,14 +16,15 @@ async function readAssertions() {
   }
 }
 
-// Returns the media app name currently asserting display-wake, or null.
+// Returns the owning app of a display-wake assertion (media playing), or null.
 function playingApp(assertionsText) {
-  const lines = assertionsText.split('\n');
-  for (const line of lines) {
-    if (!/PreventUserIdleDisplaySleep|PreventUserIdleSystemSleep/.test(line)) continue;
-    const lower = line.toLowerCase();
-    const hit = MEDIA_HINTS.find((h) => lower.includes(h));
-    if (hit) return hit;
+  for (const line of assertionsText.split('\n')) {
+    if (!WAKE_ASSERTIONS.test(line)) continue;
+    const m = line.match(/pid\s+\d+\(([^)]+)\)/);
+    if (!m) continue;
+    const owner = m[1].trim();
+    if (SYSTEM_OWNERS.includes(owner.toLowerCase())) continue;
+    return owner;
   }
   return null;
 }
