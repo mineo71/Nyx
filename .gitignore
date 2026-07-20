@@ -3,3 +3,4 @@ dist/
 .DS_Store
 src/resources/mediakey
 src/resources/mediapipe/face_landmarker.task
+src/renderer/styles/app.css
